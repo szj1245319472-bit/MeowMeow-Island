@@ -61,20 +61,29 @@ export function buildNightStudio(ctx) {
   box(1.00,.76,.01,0,.79,.229,dark,laptop);
   const cv=document.createElement('canvas');cv.width=512;cv.height=384;const c=cv.getContext('2d');
   const screenTexture=new THREE.CanvasTexture(cv);screenTexture.colorSpace=THREE.SRGBColorSpace;screenTexture.magFilter=THREE.NearestFilter;
-  let language='zh';const screenImages=[];
+  let language='zh',gameTime=0,gameFrame=0;
+  const gameCanvas=document.createElement('canvas');gameCanvas.width=256;gameCanvas.height=192;
+  const g=gameCanvas.getContext('2d',{alpha:false});g.imageSmoothingEnabled=false;
+  function tile(x,y,w,h,color){g.fillStyle=color;g.fillRect(Math.round(x),Math.round(y),w,h);}
   function drawScreen(){
-    const zh=language==='zh';c.fillStyle='#505992';c.fillRect(0,0,512,384);
-    c.fillStyle='#c2d4e5';c.fillRect(56,42,400,298);c.fillStyle='#050933';c.fillRect(60,46,392,27);
-    c.fillStyle='#c2d4e5';c.font='bold 15px monospace';c.fillText('ATARO / CREATIVE ARCHIVE',72,65);
-    c.fillStyle='#050933';c.font='14px Microsoft YaHei, sans-serif';c.fillText(zh?'绘画 / 摄影 / 平面 / AI':'ILLUSTRATION / PHOTO / DESIGN / AI',75,99);
-    c.fillStyle='#a091b8';c.fillRect(75,112,362,175);
-    if(screenImages[0])c.drawImage(screenImages[0],75,112,232,175);
-    if(screenImages[1])c.drawImage(screenImages[1],313,112,124,175);
-    c.fillStyle='#050933';c.font='16px Microsoft YaHei, sans-serif';c.fillText(zh?'打开我的作品集  →':'OPEN SELECTED WORK  →',78,316);
-    c.fillStyle='#a091b8';c.fillRect(0,355,512,29);c.strokeStyle='#c2d4e5';c.strokeRect(4,359,59,20);c.fillStyle='#050933';c.font='13px monospace';c.fillText('START',11,374);c.fillText('ATARO STUDIO',366,374);
+    const scroll=Math.floor(gameTime*18)%512,navy='#050933',ice='#c2d4e5',yellow='#fddb43';
+    tile(0,0,256,192,ice);tile(0,0,256,21,navy);
+    g.fillStyle=ice;g.font='bold 8px monospace';g.fillText('ATARO   001250',7,13);g.fillText('COIN  x 08',103,13);g.fillText('WORLD  1-1',189,13);
+    for(let i=0;i<7;i++){let x=((i*62-scroll*.32)%350+350)%350-42,y=33+(i%3)*17;tile(x,y+5,28,8,'#ffffff');tile(x+5,y,17,14,'#ffffff');tile(x+4,y+12,24,3,'#a091b8');}
+    for(let i=0;i<4;i++){let x=((i*113-scroll*.53)%480+480)%480-56;tile(x,121,74,34,'#a091b8');tile(x+9,109,52,45,'#505992');tile(x+23,100,25,53,'#a091b8');}
+    for(let i=0;i<8;i++){let x=((i*54+42-scroll)%512+512)%512-24,y=80+(i%3)*16;tile(x,y,17,16,'#050933');tile(x+2,y+2,13,12,'#a091b8');tile(x+4,y+4,9,2,'#fddb43');tile(x+3,y+11,11,2,'#505992');}
+    for(let i=0;i<5;i++){let x=((i*83+70-scroll)%512+512)%512-14,y=55+(i%2)*15;tile(x+4,y,5,12,'#a97116');tile(x+5,y+1,3,10,yellow);tile(x+6,y+3,1,5,'#fff7ab');}
+    for(let i=0;i<3;i++){let x=((i*164+115-scroll)%512+512)%512-24;tile(x,119,32,37,navy);tile(x+2,121,28,35,'#36786f');tile(x-3,116,38,9,navy);tile(x-1,117,34,6,'#56a48c');tile(x+5,126,3,27,'#83c4a7');}
+    tile(0,155,256,37,navy);for(let i=0;i<17;i++){let x=i*16-(scroll%16);tile(x,156,15,15,'#8d5b47');tile(x+2,158,11,2,'#c6855e');tile(x,172,15,17,'#62445b');tile(x+1,173,13,2,'#8d5b47');}
+    const bounce=Math.max(0,Math.sin(gameTime*3.4))*13,px=78,py=Math.round(132-bounce),step=Math.floor(gameTime*8)%2;
+    tile(px+4,py-18,13,3,navy);tile(px+5,py-21,11,4,'#b74046');tile(px+2,py-18,19,4,'#b74046');
+    tile(px+5,py-14,12,9,'#d99572');tile(px+15,py-12,5,3,'#d99572');tile(px+4,py-11,4,2,navy);tile(px+10,py-9,9,2,navy);
+    tile(px+4,py-5,16,11,'#505992');tile(px+4,py-5,5,5,'#b74046');tile(px+15,py-5,5,5,'#b74046');tile(px+7,py-2,3,4,yellow);tile(px+15,py-2,3,4,yellow);
+    tile(px+2,py+6,7,3,'#30314b');tile(px+14,py+6+(step?1:0),7,3,'#30314b');
+    tile(0,189,256,3,navy);c.imageSmoothingEnabled=false;c.fillStyle=navy;c.fillRect(0,0,512,384);c.drawImage(gameCanvas,0,0,512,384);
     screenTexture.needsUpdate=true;
   }
-  ['03','01'].forEach((id,i)=>{const img=new Image();img.onload=()=>{screenImages[i]=img;drawScreen();};img.src=`assets/${id}.webp`;});drawScreen();
+  drawScreen();
   const screenMaterial=new THREE.MeshStandardMaterial({map:screenTexture,emissiveMap:screenTexture,emissive:'#c2d4e5',emissiveIntensity:.65,roughness:.75});
   mesh(new THREE.PlaneGeometry(.947,.704),screenMaterial,[0,.79,.236],laptop,'CRT_screen');
   for(let i=0;i<4;i++)box(.055,.018,.011,.23+i*.07,.362,.232,metal,laptop);
@@ -134,7 +143,7 @@ export function buildNightStudio(ctx) {
   function apply(){for(const circuit of circuits.values()){circuit.lights.forEach((l,i)=>l.intensity=circuit.on?circuit.powers[i]:0);circuit.emissive.forEach(m=>m.emissiveIntensity=circuit.on?.65:0);}}
   function applyMood(night){scene.background.set(night?'#050933':'#505992');sky.material.color.set(night?'#050933':'#a091b8');hemi.color.set('#c2d4e5');hemi.groundColor.set('#505992');hemi.intensity=night?.30:.9;sun.color.set('#a091b8');sun.intensity=night?.45:1.4;sun.position.set(-4,5,-.2);sun.shadow.normalBias=.008;fill.color.set('#c2d4e5');fill.intensity=night?.16:.45;fill.position.set(3,3,3);monitorLight.intensity=night?1.85:.65;catRim.intensity=night?1.05:.58;apply();}
   deskLight.intensity=0;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.10;applyMood(true);
-  return {circuits,keyboard,bgmSpeaker,monitor:laptop,setMusicState(state){const playing=state.status==='playing';bgmSpeaker.userData.playing=playing;speakerLED.color.set(playing?'#8ceaa4':state.available?'#c7aa65':'#465446');speakerLED.emissiveIntensity=playing?1.4:0;},has:key=>circuits.has(key),toggle(key){const c=circuits.get(key);if(c){c.on=!c.on;apply();}},applyMood,setLanguage(lang){language=lang;drawScreen();},
+  return {circuits,keyboard,bgmSpeaker,monitor:laptop,setMusicState(state){const playing=state.status==='playing';bgmSpeaker.userData.playing=playing;speakerLED.color.set(playing?'#8ceaa4':state.available?'#c7aa65':'#465446');speakerLED.emissiveIntensity=playing?1.4:0;},has:key=>circuits.has(key),toggle(key){const c=circuits.get(key);if(c){c.on=!c.on;apply();}},applyMood,update(dt){gameTime+=dt;if(gameTime-gameFrame>.08){gameFrame=gameTime;drawScreen();}},setLanguage(lang){language=lang;drawScreen();},
     frame(camera,controls,width,height,closeup=false){const portrait=width/height<.85;camera.fov=portrait?(closeup?48:54):(closeup?38:40);camera.aspect=width/height;
       if(closeup){camera.position.set(-1.48,2.34,.03);controls.target.set(-.20,1.95,1.02);}
       else{camera.position.set(2.62,2.70,3.20);controls.target.set(-.15,2.42,-.26);}

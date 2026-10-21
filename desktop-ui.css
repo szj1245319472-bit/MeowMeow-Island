@@ -93,6 +93,9 @@ body.cinematic #panel .collection-item{display:flex;align-items:center;gap:22px;
 .collection-copy{min-width:0}
 .collection-object{position:relative;display:block;flex:none;width:59px;height:77px;box-shadow:4px 5px 0 rgb(var(--navy-rgb) / .28);transform:perspective(250px) rotateY(-12deg);transition:transform .18s ease}
 .collection-item:hover .collection-object{transform:perspective(250px) rotateY(0) translateY(-3px)}
+.collection-cover{object-fit:cover;background:var(--ice);border:3px solid var(--navy)}
+.collection-games .collection-cover,.collection-books .collection-cover{background:var(--ice);border:3px solid var(--navy)}
+.collection-games .collection-cover::after,.collection-books .collection-cover::after{content:none}
 .collection-books .collection-object{background:linear-gradient(90deg,var(--navy) 0 7px,var(--indigo) 7px 11px,var(--lilac) 11px);border:3px solid var(--indigo)}
 .collection-books .collection-object::after{content:'';position:absolute;inset:13px 10px 15px 15px;border-top:2px solid var(--ice);border-bottom:2px solid var(--ice)}
 .collection-films .collection-object{background:var(--navy);border:3px solid var(--indigo)}

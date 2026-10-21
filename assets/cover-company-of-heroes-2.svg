@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 440">
+<defs><linearGradient id="winter" x2="0" y2="1"><stop stop-color="#566c7b"/><stop offset="1" stop-color="#182638"/></linearGradient></defs><path fill="url(#winter)" d="M0 0h320v440H0z"/>
+<path fill="#a4b8bc" d="M0 262l66-61 58 22 81-72 115 83v206H0z"/><path fill="#d0dbe0" d="M0 271l66-61 58 22 81-72 115 83v5l-115-72-81 68-58-18L0 281z"/>
+<path fill="#273b46" d="M0 292l75-45 43 16 51-39 75 15 76-34v235H0z"/><path fill="#182633" d="M0 338l320-66v168H0z"/>
+<path fill="#0e1c2b" d="M25 298h205l20-33-102-5-20-34-63 5-16 48-24 6z"/><path fill="#72848a" d="M73 241l51-4 13 26-76 6zm73 25l93 6-15 17h-89z"/><path fill="#1e2a31" d="M27 295h237v30H27z"/><path fill="#84979d" d="M29 295h226v5H29z"/><circle cx="78" cy="324" r="24" fill="#0d1820" stroke="#5a6970" stroke-width="5"/><circle cx="209" cy="324" r="24" fill="#0d1820" stroke="#5a6970" stroke-width="5"/><path stroke="#0e1c2b" stroke-width="11" d="M207 263l100-44"/>
+<g fill="#e6eef0" opacity=".85"><circle cx="36" cy="122" r="2"/><circle cx="107" cy="162" r="3"/><circle cx="245" cy="174" r="2"/><circle cx="289" cy="87" r="3"/><circle cx="182" cy="120" r="2"/><circle cx="58" cy="187" r="2"/></g>
+<text x="23" y="67" fill="#f0f4f2" font-family="Arial,sans-serif" font-size="26" font-weight="900" letter-spacing="2">COMPANY OF</text><text x="23" y="108" fill="#f0f4f2" font-family="Arial,sans-serif" font-size="47" font-weight="900">HEROES 2</text><path fill="#a94442" d="M24 121h193v7H24z"/><text x="25" y="401" fill="#dce6e5" font-family="monospace" font-size="16" letter-spacing="3">WINTER FRONT / 1943</text>
+</svg>
