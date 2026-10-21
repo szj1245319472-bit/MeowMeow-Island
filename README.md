@@ -1,6 +1,5 @@
 # MeowMeow Island · ATARO Portfolio
 
-沈智键的交互式 3D 作品集：低模雨夜工作台、小猫与四类视觉作品。支持中英文切换，以及书籍、电影、音乐和游戏收藏展示。
 
 This is a static, bilingual 3D portfolio. All runtime assets are included in this repository; no build step or external CDN is required.
 
