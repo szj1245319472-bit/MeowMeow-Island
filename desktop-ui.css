@@ -1,0 +1,124 @@
+/* Millennium desktop: original pixel icons, beveled controls and lavender chrome. */
+:root{--chrome:#a091b8;--chrome-light:#c2d4e5;--chrome-shadow:#505992;--desktop-ink:#050933;--raised:inset 1px 1px var(--ice),inset -1px -1px var(--navy),inset 2px 2px #b8bad3,inset -2px -2px var(--indigo);--sunken:inset 1px 1px var(--indigo),inset -1px -1px var(--ice),inset 2px 2px var(--navy)}
+body.cinematic{font-family:Tahoma,'Microsoft YaHei',Arial,sans-serif;letter-spacing:0}
+body.cinematic button,body.cinematic #panel button{font-family:inherit;font-size:12px;border:0;border-radius:0;background:var(--chrome);color:var(--navy);box-shadow:var(--raised);backdrop-filter:none;transition:none;text-shadow:none;min-height:30px}
+body.cinematic button:hover,body.cinematic #panel button:hover{color:var(--navy);background:#b0a6c6;border:0;box-shadow:var(--raised);transform:none}
+body.cinematic button:active,body.cinematic button[aria-pressed=true]{box-shadow:var(--sunken);background:var(--chrome);color:var(--navy)}
+body.cinematic button:focus-visible{outline:1px dotted var(--navy);outline-offset:-5px}
+body.cinematic header{padding:23px 26px;background:none;align-items:start}
+body.cinematic .brand{font:24px/1.2 Tahoma,'Microsoft YaHei',sans-serif;letter-spacing:2px;color:var(--ice);text-shadow:2px 2px var(--navy)}
+.console-label{display:block;font:9px/1.5 monospace;letter-spacing:2px;color:var(--lilac);margin-bottom:6px}
+body.cinematic .brand span{font:10px Tahoma,'Microsoft YaHei',sans-serif;color:var(--ice);letter-spacing:1px;margin-top:7px}
+body.cinematic header nav{padding:3px;background:var(--chrome);box-shadow:var(--raised);gap:3px}
+body.cinematic header nav button{padding:5px 12px;min-height:27px;font-size:11px}
+body.cinematic #scene-controls{position:absolute;inset:0;display:block;pointer-events:none}
+body.cinematic #scene-controls .shortcuts{position:absolute;top:120px;bottom:auto;left:18px;right:auto;transform:none;width:184px;display:grid;grid-template-columns:repeat(2,86px);gap:14px 6px;padding:0;background:none;border:0;border-radius:0;pointer-events:auto}
+body.cinematic .shortcuts button{display:flex;flex-direction:column;align-items:center;justify-content:start;gap:5px;width:86px;min-height:78px;padding:4px 1px;background:none;border:0;box-shadow:none;color:var(--ice);font:11px/1.4 Tahoma,'Microsoft YaHei',sans-serif;white-space:normal}
+body.cinematic .shortcuts svg{width:38px;height:38px;overflow:visible;filter:drop-shadow(2px 2px 0 var(--navy));image-rendering:pixelated}
+body.cinematic .shortcuts button span{padding:2px 4px;text-shadow:1px 1px var(--navy);border:1px solid transparent}
+body.cinematic .shortcuts button:hover,body.cinematic .shortcuts button:focus-visible{background:none;color:var(--ice);box-shadow:none;outline:none}
+body.cinematic .shortcuts button:hover span,body.cinematic .shortcuts button:focus-visible span{background:var(--indigo);border:1px dotted var(--ice)}
+body.cinematic #scene-controls footer{display:contents}
+body.cinematic #scene-controls .tools{position:absolute;bottom:6px;right:92px;flex-wrap:nowrap;gap:4px;z-index:52;pointer-events:auto}
+body.cinematic .tools button{font-size:11px;min-height:29px;padding:5px 9px;white-space:nowrap}
+body.cinematic #hint{position:absolute;left:25px;bottom:53px;font:10px Tahoma,'Microsoft YaHei',sans-serif;color:var(--ice);letter-spacing:0;text-shadow:1px 1px var(--navy)}
+body.cinematic #tooltip{border-radius:0;border:1px solid var(--navy);padding:4px 8px;background:var(--ice);color:var(--navy);box-shadow:2px 2px var(--navy);font:11px Tahoma,'Microsoft YaHei',sans-serif}
+#desktop-taskbar{position:fixed;bottom:0;left:0;right:0;height:42px;padding:5px;display:flex;align-items:center;gap:8px;background:var(--chrome);box-shadow:inset 0 1px var(--ice),inset 0 2px #b8bad3;z-index:50;color:var(--navy)}
+body.cinematic #desktop-start{display:flex;align-items:center;gap:7px;min-height:32px;padding:4px 12px 4px 8px;font-size:13px}
+#desktop-start>span{font-size:21px;line-height:20px;color:var(--indigo);text-shadow:1px 1px var(--ice)}
+#desktop-session{height:29px;min-width:150px;max-width:220px;padding:5px 18px 5px 11px;box-shadow:var(--sunken);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#desktop-clock{margin-left:auto;min-width:72px;text-align:center;box-shadow:inset 1px 1px var(--indigo),inset -1px -1px var(--ice);padding:5px;font:12px/19px Tahoma,sans-serif}
+body.cinematic #desktop-taskbar .tools{position:static;display:flex;flex-wrap:nowrap;gap:4px;margin-left:auto;pointer-events:auto}#desktop-taskbar .tools+#desktop-clock{margin-left:0}
+#start-menu{position:fixed;bottom:42px;left:5px;width:230px;padding:3px;display:flex;gap:4px;background:var(--chrome);box-shadow:var(--raised),4px 4px 0 rgb(var(--navy-rgb) / .55);z-index:60}
+#start-menu[hidden]{display:none}.start-rail{writing-mode:vertical-rl;transform:rotate(180deg);background:linear-gradient(var(--indigo),var(--navy));color:var(--ice);padding:10px 8px;font:bold 16px Tahoma;letter-spacing:2px}
+.start-items{padding:4px 0;flex:1;display:flex;flex-direction:column;gap:2px}
+body.cinematic .start-items button{box-shadow:none;text-align:left;font-size:12px;padding:13px 9px}
+body.cinematic .start-items button:hover,body.cinematic .start-items button:focus-visible{background:var(--navy);color:var(--ice);box-shadow:none}
+body.retro-filter #desktop-taskbar,body.retro-filter #start-menu{filter:url('#retro-color-steps')}
+/* Explorer window: title bar, address well, files, and recessed status strip. */
+body.cinematic #panel{inset:32px 24px 62px auto;width:min(960px,66vw);height:calc(100dvh - 94px);max-height:none;padding:4px 4px 0;background:var(--chrome);color:var(--navy);border:0;border-radius:0;outline:0;box-shadow:var(--raised),7px 7px 0 rgb(var(--navy-rgb) / .45);backdrop-filter:none;scrollbar-color:var(--chrome) var(--ice);overscroll-behavior:contain;scrollbar-width:auto}
+body.cinematic #panel::backdrop{background:rgb(var(--navy-rgb) / .12);backdrop-filter:none}
+body.cinematic #panel[open]{animation:desktop-open .24s ease-out both}
+.window-bar{position:sticky;top:-4px;display:flex;align-items:center;gap:7px;min-height:29px;padding:3px 4px;background:linear-gradient(90deg,var(--navy),var(--indigo));color:var(--ice);z-index:5;font:bold 12px Tahoma,'Microsoft YaHei',sans-serif}
+.window-mark{font:17px monospace;color:var(--ice)}#window-title{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+body.cinematic #panel #close{position:static;float:none;width:22px;height:21px;min-height:21px;margin:0;padding:0;background:var(--chrome);color:var(--navy);box-shadow:var(--raised);border:0;border-radius:0;font:bold 18px/20px Arial}
+.window-location{display:flex;align-items:center;gap:9px;padding:8px 9px;background:var(--chrome);border-bottom:1px solid var(--indigo);font:11px Tahoma,'Microsoft YaHei',sans-serif;color:var(--navy)}
+.window-location>span:first-child{font-size:17px;color:var(--yellow);text-shadow:1px 1px var(--navy)}
+#window-address{flex:1;box-shadow:var(--sunken);padding:5px 9px;background:var(--ice);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.cinematic #panel-content{padding:21px 22px 26px;min-height:calc(100% - 120px)}
+body.cinematic #panel .eyebrow{font:10px Tahoma,'Microsoft YaHei',sans-serif;letter-spacing:1px;color:var(--indigo);text-shadow:none}
+body.cinematic #panel h1{font:bold 25px/1.4 Tahoma,'Microsoft YaHei',sans-serif;letter-spacing:0;margin:6px 0 7px;color:var(--navy);text-shadow:none}
+body.cinematic #panel .archive-intro{font-size:11px;color:var(--navy);margin:0 0 19px}
+body.cinematic #panel .grid{padding:13px;gap:18px 14px;background:var(--ice);border:0;box-shadow:var(--sunken);min-height:300px}
+body.cinematic #panel .work{padding:7px;background:transparent;border:1px solid transparent;border-radius:0;box-shadow:none;animation:desktop-file .25s ease-out both;animation-delay:calc(var(--order,0)*45ms);text-align:center}
+body.cinematic #panel .work-image{padding:4px;background:var(--chrome);border:0;box-shadow:var(--sunken)}
+body.cinematic #panel .work img{height:clamp(180px,28vh,310px);background:var(--ice);transition:none}
+body.cinematic #panel .work:hover img{transform:none}
+body.cinematic #panel .work span{display:flex;gap:7px;align-items:center;justify-content:center;padding:8px 5px;margin-top:5px;color:var(--navy);font-size:12px}
+body.cinematic #panel .work span small{color:var(--indigo);font:10px monospace}.work span b{display:none}
+body.cinematic #panel .work:hover,body.cinematic #panel .work:focus-visible{border:1px dotted var(--navy);background:transparent;box-shadow:none;transform:none;outline:none}
+body.cinematic #panel .work:hover span,body.cinematic #panel .work:focus-visible span{background:var(--navy);color:var(--ice)}
+body.cinematic #panel .work:hover small,body.cinematic #panel .work:focus-visible small{color:var(--lilac)}
+body.cinematic #panel .full-image{background:var(--ice);padding:7px;margin-top:17px;border:0;border-radius:0;box-shadow:var(--sunken);max-height:64vh}
+body.cinematic #panel .muted,body.cinematic #panel .collection-item div{color:var(--navy)}body.cinematic #panel a{color:var(--navy);text-decoration-color:var(--indigo)}
+body.cinematic #panel .collection-item{border-color:var(--indigo);padding:17px 4px}.collection-item strong{color:var(--navy);font-size:17px}
+#console-help{position:sticky;bottom:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--chrome);color:var(--navy);font:10px/1.5 Tahoma,'Microsoft YaHei',sans-serif;min-height:37px;margin:0;padding:7px 9px;box-shadow:inset 1px 1px var(--indigo),inset -1px -1px var(--ice);z-index:5}
+#console-help span{white-space:nowrap}#console-help kbd{font:10px monospace;box-shadow:var(--raised);padding:2px 4px;margin-right:5px;color:var(--navy)}
+#console-help .archive-count{margin-left:auto;color:var(--navy);font-size:10px}
+body.cinematic #console-help button[data-retro-toggle]{color:var(--navy);background:var(--chrome);box-shadow:var(--raised);border:0;border-radius:0;padding:3px 8px;min-height:25px;margin:0}
+body.cinematic #console-help button[data-retro-toggle][aria-pressed=true]{box-shadow:var(--sunken)}
+body.retro-filter #panel h1{text-shadow:none}#journey{bottom:60px;left:25px;font-size:11px}#loading{color:var(--ice)}
+@keyframes desktop-open{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes desktop-file{from{opacity:0}to{opacity:1}}
+@media(max-width:1000px) and (min-width:760px){#desktop-session{min-width:100px;max-width:115px}body.cinematic .tools button{padding:5px 6px;font-size:10px}body.cinematic #scene-controls .shortcuts{grid-template-columns:82px;width:86px;gap:0;top:103px;max-height:calc(100dvh - 175px);overflow:auto;scrollbar-width:thin}body.cinematic .shortcuts button{min-height:69px}}
+@media(max-width:759px){body.cinematic header{padding:15px 13px;gap:5px}body.cinematic .brand{font-size:16px;letter-spacing:1px}.console-label{font-size:7px;letter-spacing:1px}body.cinematic .brand span{font-size:9px;letter-spacing:0}body.cinematic header nav{gap:1px;padding:2px}body.cinematic header nav button{padding:4px 6px;font-size:10px;min-height:25px}body.cinematic #scene-controls .shortcuts{top:97px;left:9px;width:calc(100% - 18px);grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 1px}body.cinematic .shortcuts button{width:100%;min-height:70px;gap:3px;font-size:9px}body.cinematic .shortcuts svg{width:30px;height:30px}body.cinematic .shortcuts button span{padding:1px 2px}body.cinematic #scene-controls .tools{bottom:47px;left:8px;right:8px;justify-content:center;gap:3px}body.cinematic .tools button{font-size:9px;min-height:27px;padding:4px 5px}body.cinematic #hint{left:0;right:0;bottom:81px;text-align:center;font-size:9px}#desktop-taskbar{height:37px}body.cinematic #desktop-start{min-height:28px;font-size:11px;padding:3px 8px}#desktop-session{min-width:110px;max-width:160px;font-size:10px;height:26px}#desktop-clock{min-width:56px;font-size:10px;line-height:16px}#start-menu{bottom:37px}body.cinematic #panel{inset:auto 8px 45px;width:calc(100% - 16px);height:73dvh;max-height:calc(100dvh - 64px);padding:3px 3px 0}body.cinematic #panel-content{padding:16px 11px 20px;min-height:calc(100% - 136px)}body.cinematic #panel h1{font-size:22px}.window-bar{font-size:11px;min-height:27px}.window-location{padding:5px 6px;font-size:10px}body.cinematic #panel .grid{grid-template-columns:1fr;padding:10px;gap:20px}body.cinematic #panel .work img{height:235px}#console-help{gap:7px;padding:7px;font-size:9px}#console-help .archive-count{margin:0}#console-help kbd{font-size:8px;margin-right:3px}body.cinematic #panel .full-image{max-height:none}#journey{bottom:113px}}
+@media(prefers-reduced-motion:reduce){body.cinematic #panel[open],body.cinematic #panel .work{animation:none}}
+@media(max-width:759px){body.cinematic #desktop-taskbar .tools{position:absolute;bottom:47px;left:8px;right:8px;justify-content:center;margin:0;gap:3px}#desktop-taskbar .tools+#desktop-clock{margin-left:auto}}
+
+/* Final portfolio pass: compact controls, legible archive and tactile collections. */
+#start-menu{width:244px}
+.start-control-panel{border-top:1px solid var(--indigo);padding-top:6px;margin-top:5px;display:grid;gap:2px}
+.start-section-title{padding:5px 9px;color:var(--navy);font:bold 11px Tahoma,'Microsoft YaHei',sans-serif}
+body.cinematic .start-control-panel button{text-align:left;width:100%;padding:9px;min-height:32px;box-shadow:none;background:transparent}
+body.cinematic .start-control-panel button:hover,body.cinematic .start-control-panel button:focus-visible{background:var(--navy);color:var(--ice)}
+body.cinematic #desktop-taskbar .tools{margin-left:auto}
+body.cinematic #desktop-taskbar .tools button{min-height:29px;font-size:11px;padding:4px 10px}
+body.cinematic #panel{width:min(960px,62vw);font-size:15px;line-height:1.7}
+body.cinematic #panel .archive-intro{font-size:13px}
+body.cinematic #panel .work span{font-size:13px}
+body.cinematic #panel .work{animation-duration:.18s;animation-delay:calc(var(--order,0)*35ms)}
+body.cinematic #panel[open]{animation-duration:.22s}
+body.cinematic #panel .grid{align-content:start;min-height:0}
+body.cinematic #panel .collection-item{display:flex;align-items:center;gap:22px;min-height:105px;padding:14px 10px}
+.collection-copy{min-width:0}
+.collection-object{position:relative;display:block;flex:none;width:59px;height:77px;box-shadow:4px 5px 0 rgb(var(--navy-rgb) / .28);transform:perspective(250px) rotateY(-12deg);transition:transform .18s ease}
+.collection-item:hover .collection-object{transform:perspective(250px) rotateY(0) translateY(-3px)}
+.collection-books .collection-object{background:linear-gradient(90deg,var(--navy) 0 7px,var(--indigo) 7px 11px,var(--lilac) 11px);border:3px solid var(--indigo)}
+.collection-books .collection-object::after{content:'';position:absolute;inset:13px 10px 15px 15px;border-top:2px solid var(--ice);border-bottom:2px solid var(--ice)}
+.collection-films .collection-object{background:var(--navy);border:3px solid var(--indigo)}
+.collection-films .collection-object::before{content:'VHS';position:absolute;top:7px;left:8px;color:var(--ice);font:bold 9px monospace}
+.collection-films .collection-object::after{content:'';position:absolute;inset:26px 5px 13px;background:var(--lilac);border-top:5px solid var(--ice)}
+.collection-music .collection-object{width:76px;height:76px;border-radius:50%;background:repeating-radial-gradient(circle,var(--navy) 0 3px,var(--indigo) 3px 4px);border:3px solid var(--navy)}
+.collection-music .collection-object::after{content:'';position:absolute;top:25px;left:25px;width:20px;height:20px;border-radius:50%;background:var(--yellow);box-shadow:inset 0 0 0 8px var(--lilac)}
+.collection-games .collection-object{background:linear-gradient(145deg,var(--indigo),var(--navy));border:4px solid var(--ice)}
+.collection-games .collection-object::after{content:'';position:absolute;inset:12px 7px;border:2px solid var(--yellow)}
+.case-layout{display:grid;grid-template-columns:minmax(0,72fr) minmax(210px,28fr);gap:18px;align-items:start;margin-top:14px}
+.case-media{padding:6px;background:var(--ice);box-shadow:var(--sunken)}
+body.cinematic #panel .case-media .full-image{margin:0;max-height:none;padding:0;border:0;background:transparent;width:100%;height:auto;object-fit:contain}
+.case-info{position:sticky;top:47px;padding:14px 10px;color:var(--navy);background:var(--ice);box-shadow:var(--sunken);font-size:15px;line-height:1.7}
+.case-info h2{font-size:17px;margin:8px 0 12px}
+.case-info p{margin:0 0 14px}
+.case-info .muted{font-size:12px}
+@media(max-width:1199px){.case-layout{grid-template-columns:1fr}.case-info{position:static}}
+@media(max-width:759px){body.cinematic #panel{width:calc(100% - 16px)}body.cinematic #panel .archive-intro{font-size:13px}.case-layout{gap:14px}.case-info{font-size:15px;line-height:1.65}.collection-object{transform:none}}
+@media(prefers-reduced-motion:reduce){.collection-object{transition:none}.collection-item:hover .collection-object{transform:none}}
+.about-intro{max-width:710px;font-size:15px;line-height:1.7}
+.about-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin-top:20px}
+.about-grid section{padding:12px 14px;background:var(--ice);box-shadow:var(--sunken);min-width:0}
+.about-grid h2{margin:0 0 8px;color:var(--navy);font-size:15px}
+.about-grid p{margin:0 0 9px;line-height:1.65}
+.about-grid strong{display:block;font-size:14px}
+.about-grid small{display:block;color:var(--indigo);font-size:11px}
+.about-grid a{font-size:15px;overflow-wrap:anywhere}
+@media(max-width:759px){.about-grid{grid-template-columns:1fr}}
+@media(max-width:759px){body.cinematic #desktop-taskbar .tools{position:static;inset:auto;width:auto;right:auto;left:auto;bottom:auto;justify-content:flex-start;margin-left:auto}body.cinematic #desktop-taskbar .tools button{font-size:10px;padding:3px 5px}#desktop-session{min-width:0;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
