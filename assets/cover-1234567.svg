@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+<path fill="#505992" d="M0 0h320v320H0z"/><path fill="#050933" d="M13 13h294v294H13z"/>
+<path stroke="#a091b8" stroke-width="1" opacity=".7" d="M27 48h266M27 86h266M27 124h266M27 162h266M27 200h266M27 238h266"/>
+<g fill="#fddb43" font-family="Arial,sans-serif" font-size="61" font-weight="900"><text x="29" y="103">1</text><text x="108" y="119">2</text><text x="214" y="95">3</text><text x="61" y="178">4</text><text x="159" y="195">5</text><text x="248" y="183">6</text><text x="127" y="261">7</text></g>
+<path fill="none" stroke="#c2d4e5" stroke-width="4" d="M29 132c24-8 31-8 55 0s31 8 55 0 31-8 55 0 31 8 55 0 31-8 43 0"/><circle cx="60" cy="132" r="5" fill="#a091b8"/><circle cx="159" cy="132" r="5" fill="#a091b8"/><circle cx="249" cy="132" r="5" fill="#a091b8"/>
+<path fill="#c2d4e5" d="M13 271h294v36H13z"/><text x="28" y="294" fill="#050933" font-family="Arial,sans-serif" font-size="14" font-weight="bold" letter-spacing="2">1234567  /  KHALIL FONG · 方大同</text>
+</svg>
