@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+<defs><radialGradient id="g"><stop stop-color="#d9bfd3"/><stop offset="1" stop-color="#505992"/></radialGradient></defs>
+<path fill="#050933" d="M0 0h320v320H0z"/><path fill="url(#g)" d="M16 16h288v288H16z"/>
+<circle cx="160" cy="159" r="109" fill="none" stroke="#ece4df" stroke-opacity=".55" stroke-width="2"/><circle cx="160" cy="159" r="85" fill="none" stroke="#ece4df" stroke-opacity=".6" stroke-width="2"/><circle cx="160" cy="159" r="61" fill="none" stroke="#ece4df" stroke-opacity=".7" stroke-width="2"/>
+<path fill="#050933" d="M160 214C102 180 87 152 87 130c0-21 15-36 35-36 17 0 29 9 38 22 9-13 21-22 38-22 20 0 35 15 35 36 0 22-15 50-73 84z"/><path fill="#fddb43" d="M160 200c-48-29-61-53-61-70 0-14 10-24 23-24 16 0 29 13 38 27 9-14 22-27 38-27 13 0 23 10 23 24 0 17-13 41-61 70z"/>
+<path fill="#050933" d="M16 242h288v62H16z"/><text x="31" y="270" fill="#f1e9f0" font-family="Arial,sans-serif" font-size="28" font-weight="900" letter-spacing="2">LOVE SONG</text><text x="32" y="291" fill="#c2d4e5" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">KHALIL FONG  /  方大同</text><path fill="#fddb43" d="M16 16h288v5H16z"/>
+</svg>
