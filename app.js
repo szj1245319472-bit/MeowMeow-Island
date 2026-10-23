@@ -8,7 +8,7 @@ import { addBlackCat } from './black-cat.js?v=art-pass-1';
 import { createDesktopUI } from './desktop-ui.js?v=review-pass-20261023';
 import { createRetroFilter } from './retro-filter.js?v=art-pass-1';
 import { createArchiveCamera } from './archive-camera.js?v=review-pass-20261023';
-import { createRoomAmbience } from './room-sound.js?v=quiet-blinds-20261023';
+import { createRoomAmbience } from './room-sound.js?v=outside-half-20261023';
 import { createWindowRain } from './window-rain.js?v=rain-room';
 
 const $=s=>document.querySelector(s), scene=new THREE.Scene();

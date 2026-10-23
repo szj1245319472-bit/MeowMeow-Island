@@ -5,6 +5,8 @@ export function createRoomSound(context, destination=context.destination) {
   // Interaction sounds remain clear above the deliberately quiet rain bed.
   const effects=context.createGain();effects.gain.value=.72;effects.connect(destination);
   const keyboardBus=context.createGain();keyboardBus.gain.value=1;keyboardBus.connect(master);
+  // Keep exterior rain and traffic at half level without changing room interactions.
+  const outsideBus=context.createGain();outsideBus.gain.value=.5;outsideBus.connect(master);
   const noise=context.createBuffer(2,context.sampleRate*8,context.sampleRate);
   for(let ch=0;ch<2;ch++){
     const samples=noise.getChannelData(ch),fade=Math.floor(context.sampleRate*.05);
@@ -18,7 +20,7 @@ export function createRoomSound(context, destination=context.destination) {
   const low=context.createBiquadFilter();low.type='lowpass';low.frequency.value=3900;low.Q.value=.5;
   const high=context.createBiquadFilter();high.type='highpass';high.frequency.value=110;
   const rainGain=context.createGain();rainGain.gain.value=.65;
-  rain.connect(high).connect(low).connect(rainGain).connect(master);rain.start();
+  rain.connect(high).connect(low).connect(rainGain).connect(outsideBus);rain.start();
   const click=context.createBuffer(1,context.sampleRate*.08,context.sampleRate);
   const data=click.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/(context.sampleRate*.009));
   function key(at=context.currentTime,side=0){
@@ -40,7 +42,7 @@ export function createRoomSound(context, destination=context.destination) {
     const duration=.65+Math.random()*.35;
     gain.gain.setValueAtTime(0,at);gain.gain.linearRampToValueAtTime(.019,at+.14);gain.gain.setValueAtTime(.019,at+duration*.65);gain.gain.linearRampToValueAtTime(0,at+duration);
     pan.pan.setValueAtTime(-.55,at);pan.pan.linearRampToValueAtTime(.12,at+duration);
-    gain.connect(filter).connect(pan).connect(master);
+    gain.connect(filter).connect(pan).connect(outsideBus);
     let finished=0;
     for(const frequency of [349,440]){const tone=context.createOscillator();tone.type='sawtooth';tone.frequency.setValueAtTime(frequency,at);tone.frequency.linearRampToValueAtTime(frequency*.982,at+duration);tone.connect(gain);tone.start(at);tone.stop(at+duration+.02);tone.onended=()=>{tone.disconnect();if(++finished===2){gain.disconnect();filter.disconnect();pan.disconnect();}};}
   }
