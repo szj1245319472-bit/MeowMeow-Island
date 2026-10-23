@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title description">
+<title id="title">作品更新中</title><desc id="description">像素风格的统一作品占位图</desc>
+<defs>
+  <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#505992" stroke-opacity=".28" stroke-width="2"/></pattern>
+  <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 3h4" stroke="#050933" stroke-opacity=".2"/></pattern>
+  <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#22264f"/><stop offset="1" stop-color="#505992"/></linearGradient>
+</defs>
+<path fill="#050933" d="M0 0h1200v800H0z"/><path fill="url(#sky)" d="M26 26h1148v748H26z"/><path fill="url(#grid)" d="M26 26h1148v748H26z"/>
+<path fill="#050933" d="M26 26h1148v76H26z"/><path fill="#c2d4e5" d="M56 54h17v17H56zm30 0h17v17H86zm30 0h17v17h-17z"/>
+<text x="171" y="73" fill="#c2d4e5" font-family="monospace" font-size="28" font-weight="bold" letter-spacing="5">ATARO / WORK ARCHIVE</text>
+<path fill="#a091b8" d="M200 174h800v444H200z"/><path fill="#050933" d="M220 194h760v404H220z"/><path fill="#505992" d="M240 214h720v364H240z"/>
+<path fill="#a091b8" d="M285 501l180-150 115 92 140-145 195 203z"/><path fill="#050933" d="M285 502l180-138 115 96 140-143 195 185v39H285z"/><path fill="#c2d4e5" d="M465 363l-45 37 45-32 115 96 140-143 180 171-180-187-140 145z"/>
+<circle cx="766" cy="325" r="58" fill="#fddb43"/><path fill="#505992" d="M766 267h58v58h-58z" opacity=".16"/>
+<path fill="#050933" d="M240 500h720v78H240z"/><path fill="#fddb43" d="M258 519h684v7H258z"/>
+<text x="600" y="558" fill="#c2d4e5" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="bold" text-anchor="middle" letter-spacing="8">作品更新中</text>
+<path fill="#050933" d="M26 696h1148v78H26z"/><text x="58" y="744" fill="#c2d4e5" font-family="monospace" font-size="24" letter-spacing="4">IMAGE WILL BE UPDATED</text><text x="1140" y="744" fill="#fddb43" font-family="monospace" font-size="24" text-anchor="end">◆ ATARO</text>
+<path fill="url(#scan)" d="M0 0h1200v800H0z"/>
+</svg>
