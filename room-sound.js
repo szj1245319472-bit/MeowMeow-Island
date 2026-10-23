@@ -4,6 +4,7 @@ export function createRoomSound(context, destination=context.destination) {
   const master=context.createGain();master.gain.value=0;master.connect(destination);
   // Interaction sounds remain clear above the deliberately quiet rain bed.
   const effects=context.createGain();effects.gain.value=.72;effects.connect(destination);
+  const keyboardBus=context.createGain();keyboardBus.gain.value=1;keyboardBus.connect(master);
   const noise=context.createBuffer(2,context.sampleRate*8,context.sampleRate);
   for(let ch=0;ch<2;ch++){
     const samples=noise.getChannelData(ch),fade=Math.floor(context.sampleRate*.05);
@@ -25,7 +26,7 @@ export function createRoomSound(context, destination=context.destination) {
     const filter=context.createBiquadFilter();filter.type='bandpass';filter.frequency.value=1700+Math.random()*800;filter.Q.value=.7;
     const gain=context.createGain();gain.gain.value=.20+Math.random()*.07;
     const pan=context.createStereoPanner();pan.pan.value=side*.18;
-    source.connect(filter).connect(gain).connect(pan).connect(master);
+    source.connect(filter).connect(gain).connect(pan).connect(keyboardBus);
     const thock=context.createOscillator();thock.type='triangle';thock.frequency.setValueAtTime(220+Math.random()*65,at);thock.frequency.exponentialRampToValueAtTime(110,at+.035);
     const body=context.createGain();body.gain.setValueAtTime(0,at);body.gain.linearRampToValueAtTime(.075,at+.002);body.gain.exponentialRampToValueAtTime(.0001,at+.055);
     thock.connect(body).connect(pan);source.start(at);thock.start(at);thock.stop(at+.06);
@@ -71,44 +72,38 @@ export function createRoomSound(context, destination=context.destination) {
       burst.onended=()=>{burst.disconnect();filter.disconnect();volume.disconnect();};
     }
   }
-  return {master,effects,key,horn,meow,cue,setRainEnabled(enabled){const now=context.currentTime;rainGain.gain.cancelScheduledValues(now);rainGain.gain.setValueAtTime(rainGain.gain.value,now);rainGain.gain.linearRampToValueAtTime(enabled?.65:0,now+.28);},duck(at){master.gain.cancelScheduledValues(at);master.gain.setValueAtTime(.28,at);master.gain.linearRampToValueAtTime(.22,at+.04);master.gain.setValueAtTime(.22,at+.42);master.gain.linearRampToValueAtTime(.28,at+.55);},setPlaying(playing){const now=context.currentTime;master.gain.cancelScheduledValues(now);master.gain.setTargetAtTime(playing?.28:0,now,playing?.14:.025);}};
+  return {master,effects,key,horn,meow,cue,setRainReduced(reduced){const now=context.currentTime;rainGain.gain.cancelScheduledValues(now);rainGain.gain.setValueAtTime(rainGain.gain.value,now);rainGain.gain.linearRampToValueAtTime(reduced?.025:.65,now+.28);},setTypingEnabled(enabled){const now=context.currentTime;keyboardBus.gain.cancelScheduledValues(now);keyboardBus.gain.setTargetAtTime(enabled?1:0,now,.015);},duck(at){master.gain.cancelScheduledValues(at);master.gain.setValueAtTime(.28,at);master.gain.linearRampToValueAtTime(.22,at+.04);master.gain.setValueAtTime(.22,at+.42);master.gain.linearRampToValueAtTime(.28,at+.55);},setPlaying(playing){const now=context.currentTime;master.gain.cancelScheduledValues(now);master.gain.setTargetAtTime(playing?.28:0,now,playing?.14:.025);}};
 }
 
-export function createRoomAmbience(onState){
-  let context=null,sound=null,status='waiting',desired=true,version=0,rainEnabled=true;
+export function createRoomAmbience(){
+  let context=null,sound=null,status='waiting',version=0,rainReduced=false,typingEnabled=true;
   let hornWait=14+Math.random()*12,keyWait=0,meowCount=0,lastMeow=-Infinity;const lifted=[false,false];
-  const state=()=>({status,enabled:desired,rainEnabled,volume:.4,meows:meowCount,available:true,title:'Rainy workstation',effect:'room-ambience'});
-  const publish=()=>onState(state());
+  const state=()=>({status,rainReduced,volume:.4,meows:meowCount,available:true,title:'Rainy workstation',effect:'room-ambience'});
   function ensureAudio(){
-    if(!context){context=new (window.AudioContext||window.webkitAudioContext)();sound=createRoomSound(context);sound.setRainEnabled(rainEnabled);}
+    if(!context){context=new (window.AudioContext||window.webkitAudioContext)();sound=createRoomSound(context);sound.setRainReduced(rainReduced);sound.setTypingEnabled(typingEnabled);}
   }
   async function start(){
-    if(!desired||document.hidden)return;
+    if(document.hidden)return;
     const token=++version;
     try{
       ensureAudio();
-      status=context.state==='running'?'loading':'waiting';publish();
+      status=context.state==='running'?'loading':'waiting';
       await context.resume();
-      if(token!==version||!desired||document.hidden)return;
-      sound.setPlaying(true);status='playing';publish();
+      if(token!==version||document.hidden)return;
+      sound.setPlaying(true);status='playing';
     }catch(error){
-      if(token!==version||!desired)return;
-      // Browsers may require a user gesture; preserve the requested on state.
-      status=error.name==='NotAllowedError'?'waiting':'error';publish();
+      if(token!==version)return;
+      // Browsers may require a gesture before the room audio can begin.
+      status=error.name==='NotAllowedError'?'waiting':'error';
     }
-  }
-  function toggle(){
-    desired=!desired;
-    if(!desired){version++;sound?.setPlaying(false);status='paused';publish();return Promise.resolve();}
-    return start();
   }
   async function meow(delay=.7){
     const now=performance.now();if(now-lastMeow<1500)return false;lastMeow=now;
     try{
       // Queue while still inside the click gesture. A suspended context begins
       // this note as soon as resume succeeds, instead of losing the brief meow.
-      ensureAudio();const at=context.currentTime+Math.max(.08,delay);sound.meow(at);meowCount++;publish();
-      await context.resume();if(desired&&status!=='playing')await start();if(status==='playing')sound.duck(at);return context.state==='running';
+      ensureAudio();const at=context.currentTime+Math.max(.08,delay);sound.meow(at);meowCount++;
+      await context.resume();if(status!=='playing')await start();if(status==='playing')sound.duck(at);return context.state==='running';
     }catch{return false;}
   }
   function effect(key){
@@ -116,22 +111,23 @@ export function createRoomAmbience(onState){
       ensureAudio();
       const kind=key==='blinds'?'window':key==='photo'?'shutter':['drawing','graphic','books','about','contact'].includes(key)?'paper':['ai','games'].includes(key)?'digital':['music','films'].includes(key)?'media':'switch';
       sound.cue(kind,context.currentTime+.025);
-      void context.resume().then(()=>{if(desired&&status!=='playing')void start();}).catch(()=>{});
+      void context.resume().then(()=>{if(status!=='playing')void start();}).catch(()=>{});
     }catch{/* Sound is optional when the browser has no audio device. */}
   }
-  function setRainEnabled(enabled){rainEnabled=Boolean(enabled);sound?.setRainEnabled(rainEnabled);publish();}
-  function suspend(){version++;sound?.setPlaying(false);status=desired?'waiting':'paused';publish();context?.suspend();}
-  const unlock=()=>{if(desired&&status!=='playing')void start();};
-  // Bubble after control handlers so an explicit mute is never undone by unlock.
+  function setRainReduced(reduced){rainReduced=Boolean(reduced);sound?.setRainReduced(rainReduced);}
+  function setTypingEnabled(enabled){enabled=Boolean(enabled);if(typingEnabled===enabled)return;typingEnabled=enabled;sound?.setTypingEnabled(enabled);}
+  function suspend(){version++;sound?.setPlaying(false);status='waiting';context?.suspend();}
+  const unlock=()=>{if(status!=='playing')void start();};
   document.addEventListener('click',unlock);
   document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')unlock();});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend();else if(desired)void start();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend();else void start();});
   window.addEventListener('pagehide',suspend);
-  window.addEventListener('pageshow',()=>{if(desired)void start();});
+  window.addEventListener('pageshow',()=>void start());
   // Defer callbacks until the scene and its controls finish initializing.
   queueMicrotask(()=>void start());
-  return {toggle,meow,effect,setRainEnabled,get state(){return state();},update(dt,kitten,reduced){
+  return {meow,effect,setRainReduced,setTypingEnabled,get state(){return state();},update(dt,kitten,reduced){
     const typing=kitten.reactionPhase==='typing'&&kitten.isTyping!==false;
+    setTypingEnabled(typing);
     kitten.arms.forEach((arm,i)=>{const up=arm.paw.position.y>.730;if(lifted[i]&&!up&&typing&&!reduced&&status==='playing')sound.key(context.currentTime,arm.sign);lifted[i]=up;});
     if(status!=='playing')return;
     // Reduced-motion visitors still hear keys without animating the paws.

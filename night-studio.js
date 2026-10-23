@@ -43,6 +43,8 @@ export function buildNightStudio(ctx) {
   box(3.62,.07,.07,0,-1.52,.03,trim,blinds);
   rod([1.69,1.47,.13],[1.69,-.80,.13],.012,ivory,blinds,5);
   const pull=cyl(.045,.035,.16,1.69,-.88,.13,ivory,blinds,6);pull.userData.key='blinds';
+  const blindHit=mesh(new THREE.PlaneGeometry(3.49,2.79),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}),[0,0,.20],blinds);
+  blindHit.name='Blinds_click_area';blindHit.userData.key='blinds';blindHit.castShadow=false;blindHit.receiveShadow=false;
   let blindsClosed=false,blindTilt=0;
   const sky=mesh(new THREE.PlaneGeometry(18,11),new THREE.MeshBasicMaterial({color:'#050933'}),[0,3,-7.3],model);
   const city=group('Lowpoly_night_city',null);
@@ -115,18 +117,6 @@ export function buildNightStudio(ctx) {
   for(let i=0;i<6;i++)box(.30,.01,.01,0,.2+i*.035,.366,dark,tower);
   const power=cyl(.034,.034,.012,.12,.48,.37,mat('#c8c1bd'),tower,8);power.rotation.x=Math.PI/2;
   const speakerMat=mat('#5b5c6b');for(const x of [-.69,.71]){const speaker=group('Desktop_speaker','music',x,1.66,-.43);box(.18,.35,.22,0,.175,0,speakerMat,speaker);for(const y of [.12,.27]){const disk=cyl(y<.2?.055:.025,y<.2?.055:.025,.012,0,y,.118,black,speaker,10);disk.rotation.x=Math.PI/2;}}
-  // Dedicated room-ambience speaker, distinct from the music collection.
-  const bgmSpeaker=group('Interactive_BGM_speaker','bgm',1.78,1.617,.45);bgmSpeaker.rotation.y=.15;
-  box(.36,.54,.32,0,.27,0,walnut,bgmSpeaker);box(.326,.50,.018,0,.27,.168,dark,bgmSpeaker);
-  const ring=mesh(new THREE.TorusGeometry(.106,.012,5,12),black,[0,.29,.186],bgmSpeaker);
-  const woofer=cyl(.088,.105,.027,0,.29,.182,mat('#4d505e'),bgmSpeaker,12);woofer.rotation.x=Math.PI/2;
-  const dust=cyl(.041,.045,.022,0,.29,.206,black,bgmSpeaker,10);dust.rotation.x=Math.PI/2;
-  const tweeter=cyl(.034,.034,.014,0,.445,.185,metal,bgmSpeaker,10);tweeter.rotation.x=Math.PI/2;
-  const knob=cyl(.023,.023,.028,-.087,.085,.188,metal,bgmSpeaker,8);knob.rotation.x=Math.PI/2;
-  const speakerLED=new THREE.MeshStandardMaterial({color:'#465446',emissive:'#6ee68a',emissiveIntensity:0,roughness:.6});
-  const led=mesh(new THREE.SphereGeometry(.013,6,4),speakerLED,[.087,.085,.191],bgmSpeaker);
-  const labelCanvas=document.createElement('canvas');labelCanvas.width=128;labelCanvas.height=32;const lc=labelCanvas.getContext('2d');lc.fillStyle='#20232f';lc.fillRect(0,0,128,32);lc.fillStyle='#bac1bf';lc.font='18px monospace';lc.fillText('AMBIENCE',20,23);const label=new THREE.CanvasTexture(labelCanvas);label.colorSpace=THREE.SRGBColorSpace;label.magFilter=THREE.NearestFilter;
-  plane(.15,.0375,label,0,.135,.182,bgmSpeaker);
   // A compact mug and geometric straw beside the keyboard.
   const cup=group('Desk_mug',null,-.97,1.625,.20);cyl(.086,.074,.22,0,.11,0,mat('#8b8790'),cup,10);cyl(.074,.074,.004,0,.223,0,mat('#251f22'),cup,10);const handle=mesh(new THREE.TorusGeometry(.062,.014,4,10,Math.PI*1.65),ivory,[-.088,.13,0],cup);handle.rotation.z=.55;
   rod([.017,.19,0],[.017,.36,0],.009,ivory,cup,5);rod([.017,.36,0],[-.045,.39,0],.009,ivory,cup,5);
@@ -158,7 +148,7 @@ export function buildNightStudio(ctx) {
   function apply(){for(const circuit of circuits.values()){circuit.lights.forEach((l,i)=>l.intensity=circuit.on?circuit.powers[i]:0);circuit.emissive.forEach(m=>m.emissiveIntensity=circuit.on?.65:0);}}
   function applyMood(night){scene.background.set(night?'#050933':'#505992');sky.material.color.set(night?'#050933':'#a091b8');hemi.color.set('#c2d4e5');hemi.groundColor.set('#505992');hemi.intensity=night?.22:.9;sun.color.set('#a091b8');sun.intensity=night?.30:1.4;sun.position.set(-4,5,-.2);sun.shadow.normalBias=.008;fill.color.set('#c2d4e5');fill.intensity=night?.09:.45;fill.position.set(3,3,3);monitorLight.intensity=night?1.72:.60;catRim.intensity=night?1.38:.58;catFill.intensity=night?.23:.16;apply();}
   deskLight.intensity=0;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.10;applyMood(true);
-  return {circuits,keyboard,bgmSpeaker,blinds,monitor:laptop,get blindsClosed(){return blindsClosed;},toggleBlinds(){blindsClosed=!blindsClosed;blinds.userData.closed=blindsClosed;return blindsClosed;},setMusicState(state){const playing=state.status==='playing';bgmSpeaker.userData.playing=playing;speakerLED.color.set(playing?'#8ceaa4':state.available?'#c7aa65':'#465446');speakerLED.emissiveIntensity=playing?1.4:0;},has:key=>circuits.has(key),toggle(key){const c=circuits.get(key);if(c){c.on=!c.on;apply();}},applyMood,update(dt){gameTime+=dt;if(gameTime-gameFrame>.08){gameFrame=gameTime;drawScreen();}const target=blindsClosed?1:0;blindTilt+=(target-blindTilt)*Math.min(1,dt*7);for(const slat of slats)slat.rotation.x=-1.34*(1-blindTilt);},setLanguage(lang){language=lang;drawScreen();},
+  return {circuits,keyboard,blinds,monitor:laptop,get blindsClosed(){return blindsClosed;},toggleBlinds(){blindsClosed=!blindsClosed;blinds.userData.closed=blindsClosed;return blindsClosed;},has:key=>circuits.has(key),toggle(key){const c=circuits.get(key);if(c){c.on=!c.on;apply();}},applyMood,update(dt){gameTime+=dt;if(gameTime-gameFrame>.08){gameFrame=gameTime;drawScreen();}const target=blindsClosed?1:0;blindTilt+=(target-blindTilt)*Math.min(1,dt*7);for(const slat of slats)slat.rotation.x=-1.34*(1-blindTilt);},setLanguage(lang){language=lang;drawScreen();},
     frame(camera,controls,width,height,closeup=false){const portrait=width/height<.85;camera.fov=portrait?(closeup?48:54):(closeup?38:40);camera.aspect=width/height;
       if(closeup){camera.position.set(-1.48,2.34,.03);controls.target.set(-.20,1.95,1.02);}
       else{camera.position.set(2.62,2.70,3.20);controls.target.set(-.15,2.42,-.26);}

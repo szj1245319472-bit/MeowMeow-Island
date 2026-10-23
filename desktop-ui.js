@@ -4,7 +4,7 @@ export function createDesktopUI(open,t){
  const start=document.querySelector('#desktop-start'),menu=document.querySelector('#start-menu');
  const controlPanel=document.createElement('div');controlPanel.className='start-control-panel';
  controlPanel.innerHTML='<div class="start-section-title"></div>';
- for(const button of [...tools.querySelectorAll('button')])if(button.id!=='bgm')controlPanel.append(button);
+ for(const button of [...tools.querySelectorAll('button')])controlPanel.append(button);
  menu.querySelector('.start-items').append(controlPanel);
  function closeMenu(){menu.hidden=true;start.setAttribute('aria-expanded','false');}
  start.onclick=()=>{menu.hidden=!menu.hidden;start.setAttribute('aria-expanded',String(!menu.hidden));if(!menu.hidden)menu.querySelector('button').focus();};
@@ -24,7 +24,6 @@ export function createDesktopUI(open,t){
    document.querySelector('[data-launch="about"]').textContent=t('个人资料','My profile');
    document.querySelector('[data-launch="contact"]').textContent=t('联系我','Contact');
    document.querySelector('#start-blinds').textContent=t('百叶窗 · 开关','Blinds · toggle');
-   document.querySelector('[data-launch="bgm"]').textContent=t('开启 / 关闭环境声','Toggle ambience');
    controlPanel.querySelector('.start-section-title').textContent=t('控制面板','Control panel');
    document.querySelector('#desktop-session').textContent=t('我的工作室','My studio');
    windowTitle();
