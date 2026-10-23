@@ -127,3 +127,50 @@ body.cinematic #panel .case-media .full-image{margin:0;max-height:none;padding:0
 .about-grid a{font-size:15px;overflow-wrap:anywhere}
 @media(max-width:759px){.about-grid{grid-template-columns:1fr}}
 @media(max-width:759px){body.cinematic #desktop-taskbar .tools{position:static;inset:auto;width:auto;right:auto;left:auto;bottom:auto;justify-content:flex-start;margin-left:auto}body.cinematic #desktop-taskbar .tools button{font-size:10px;padding:3px 5px}#desktop-session{min-width:0;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+/* Clear entry points and readable controls within the desktop metaphor. */
+body.cinematic .brand #subtitle{font-size:12px;letter-spacing:.4px;margin-top:8px;color:var(--ice)}
+body.cinematic .brand #brand-fields{font-size:10px;letter-spacing:.2px;margin-top:4px;color:var(--lilac)}
+body.cinematic header nav button{min-height:40px;min-width:52px;font-size:12px}
+body.cinematic #panel #close{width:44px;height:44px;min-height:44px;font-size:26px;line-height:44px}
+body.cinematic #panel[data-section=contact]{width:min(620px,62vw);height:auto;max-height:calc(100dvh - 100px);inset:48px 24px auto auto}
+body.cinematic #panel[data-section=contact] #panel-content{min-height:0}
+body.cinematic .start-items button,body.cinematic .start-control-panel button{min-height:44px}
+.category-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 18px}
+body.cinematic #panel .category-tabs button{min-height:40px;padding:7px 12px;background:var(--chrome-light);font-size:12px}
+body.cinematic #panel .category-tabs button[aria-pressed=true]{background:var(--navy);color:var(--ice);box-shadow:var(--sunken)}
+.category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+body.cinematic #panel .category-card{display:flex;align-items:center;gap:16px;width:100%;min-height:140px;padding:18px;text-align:left;background:var(--ice);border:1px solid var(--indigo);box-shadow:var(--sunken);animation:desktop-file .18s ease-out both;animation-delay:calc(var(--order,0)*35ms)}
+body.cinematic #panel .category-card:hover,body.cinematic #panel .category-card:focus-visible{background:#d3e0ed;border-color:var(--navy)}
+.category-number{flex:none;font:44px/1 Tahoma,sans-serif;color:var(--indigo);opacity:.72}
+.category-copy{display:flex;flex-direction:column;gap:8px;min-width:0}
+.category-copy strong{font-size:18px;line-height:1.35;color:var(--navy)}
+.category-copy small{font-size:11px;line-height:1.45;color:var(--indigo)}
+.contact-card{max-width:640px;margin-top:14px;padding:25px;background:var(--ice);box-shadow:var(--sunken)}
+.contact-label{font:11px monospace;letter-spacing:1px;color:var(--indigo)}
+body.cinematic #panel .contact-email{display:block;margin:14px 0;font-size:clamp(18px,3vw,28px);font-weight:bold;overflow-wrap:anywhere}
+.contact-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+body.cinematic #panel .contact-actions button{min-height:44px;padding:8px 16px}
+#copy-status{font-size:13px;color:var(--indigo)}
+.contact-card p{margin:18px 0 0;font-size:15px;line-height:1.7}
+@media(max-width:759px){
+  body.cinematic header{flex-direction:column;align-items:flex-start;gap:10px;padding:12px}
+  body.cinematic .brand{font-size:17px}
+  body.cinematic .brand #subtitle{font-size:11px;margin-top:4px}
+  body.cinematic .brand #subtitle,body.cinematic .brand #brand-fields{max-width:none;white-space:normal}
+  body.cinematic .brand #brand-fields{font-size:10px}
+  body.cinematic header nav{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  body.cinematic header nav button{min-width:0;min-height:44px;padding:5px 3px;font-size:12px}
+  body.cinematic #panel{inset:auto 8px 44px;width:calc(100% - 16px);height:min(90dvh,calc(100dvh - 54px));max-height:none}
+  body.cinematic #panel[data-section=contact]{inset:auto 8px 44px;width:calc(100% - 16px);height:auto;max-height:calc(100dvh - 70px)}
+  .window-bar{min-height:44px;font-size:12px}
+  body.cinematic #panel .category-tabs button{min-height:44px;flex:1 1 30%;font-size:12px}
+  .category-grid{grid-template-columns:1fr;gap:8px}
+  body.cinematic #panel .category-card{min-height:92px;padding:12px 15px}
+  .category-number{font-size:34px}
+  .category-copy strong{font-size:16px}
+  body.cinematic #panel .work{min-height:44px}
+  body.cinematic #panel .work img{height:190px}
+  #start-menu{max-height:calc(100dvh - 50px);overflow:auto}
+  body.cinematic #desktop-start{min-height:36px}
+}

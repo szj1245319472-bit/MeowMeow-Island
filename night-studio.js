@@ -84,7 +84,7 @@ export function buildNightStudio(ctx) {
     screenTexture.needsUpdate=true;
   }
   drawScreen();
-  const screenMaterial=new THREE.MeshStandardMaterial({map:screenTexture,emissiveMap:screenTexture,emissive:'#c2d4e5',emissiveIntensity:.65,roughness:.75});
+  const screenMaterial=new THREE.MeshStandardMaterial({map:screenTexture,emissiveMap:screenTexture,emissive:'#c2d4e5',emissiveIntensity:.58,roughness:.75});
   mesh(new THREE.PlaneGeometry(.947,.704),screenMaterial,[0,.79,.236],laptop,'CRT_screen');
   for(let i=0;i<4;i++)box(.055,.018,.011,.23+i*.07,.362,.232,metal,laptop);
   mesh(new THREE.SphereGeometry(.015,6,4),new THREE.MeshBasicMaterial({color:'#81dc8a'}),[.42,.362,.24],laptop);
@@ -138,10 +138,11 @@ export function buildNightStudio(ctx) {
   const wall=group('Warm_wall_sconce','wall-light',-.46,3.76,-1.22);box(.10,.18,.05,0,.12,0,metal,wall);rod([0,.12,0],[0,.17,.30],.013,metal,wall);mesh(new THREE.CylinderGeometry(.13,.19,.23,8,1,true),new THREE.MeshStandardMaterial({color:'#505992',roughness:1,side:THREE.DoubleSide,flatShading:true}),[0,.0,.30],wall);const wm=glow();cyl(.17,.17,.012,0,-.12,.3,wm,wall,8);
   const wl=spot(new THREE.Vector3(-.46,3.62,-.92),[-.05,3.04,-1.25],1.4,.9);register('wall-light',[wall],[wl],[wm]);
   const globe=group('Window_accent_lamp','globe-light',-2.8,1.71,-1.1);cyl(.08,.10,.06,0,.025,0,metal,globe,8);const gm=glow();const orb=mesh(new THREE.SphereGeometry(.11,8,5),gm,[0,.15,0],globe);orb.castShadow=false;const gl=new THREE.PointLight('#fddb43',.50,2.2,2);gl.position.set(-2.8,1.9,-1.04);model.add(gl);register('globe-light',[globe],[gl],[gm]);
-  const monitorLight=new THREE.PointLight('#c2d4e5',1.85,2.2,2);monitorLight.position.set(.02,2.34,.12);model.add(monitorLight);
-  const catRim=new THREE.DirectionalLight('#a091b8',1.05);catRim.position.set(-1.5,3.4,2.3);catRim.target.position.set(-.22,2.08,1.41);model.add(catRim,catRim.target);
+  const monitorLight=new THREE.PointLight('#c2d4e5',1.58,2.2,2);monitorLight.position.set(.02,2.34,.12);model.add(monitorLight);
+  const catRim=new THREE.DirectionalLight('#a091b8',1.20);catRim.position.set(-1.5,3.4,2.3);catRim.target.position.set(-.22,2.08,1.41);model.add(catRim,catRim.target);
+  const catFill=new THREE.PointLight('#c2d4e5',.28,1.5,2);catFill.position.set(-.45,2.38,1.8);model.add(catFill);
   function apply(){for(const circuit of circuits.values()){circuit.lights.forEach((l,i)=>l.intensity=circuit.on?circuit.powers[i]:0);circuit.emissive.forEach(m=>m.emissiveIntensity=circuit.on?.65:0);}}
-  function applyMood(night){scene.background.set(night?'#050933':'#505992');sky.material.color.set(night?'#050933':'#a091b8');hemi.color.set('#c2d4e5');hemi.groundColor.set('#505992');hemi.intensity=night?.30:.9;sun.color.set('#a091b8');sun.intensity=night?.45:1.4;sun.position.set(-4,5,-.2);sun.shadow.normalBias=.008;fill.color.set('#c2d4e5');fill.intensity=night?.16:.45;fill.position.set(3,3,3);monitorLight.intensity=night?1.85:.65;catRim.intensity=night?1.05:.58;apply();}
+  function applyMood(night){scene.background.set(night?'#050933':'#505992');sky.material.color.set(night?'#050933':'#a091b8');hemi.color.set('#c2d4e5');hemi.groundColor.set('#505992');hemi.intensity=night?.30:.9;sun.color.set('#a091b8');sun.intensity=night?.45:1.4;sun.position.set(-4,5,-.2);sun.shadow.normalBias=.008;fill.color.set('#c2d4e5');fill.intensity=night?.16:.45;fill.position.set(3,3,3);monitorLight.intensity=night?1.58:.60;catRim.intensity=night?1.20:.58;catFill.intensity=night?.28:.16;apply();}
   deskLight.intensity=0;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.10;applyMood(true);
   return {circuits,keyboard,bgmSpeaker,monitor:laptop,setMusicState(state){const playing=state.status==='playing';bgmSpeaker.userData.playing=playing;speakerLED.color.set(playing?'#8ceaa4':state.available?'#c7aa65':'#465446');speakerLED.emissiveIntensity=playing?1.4:0;},has:key=>circuits.has(key),toggle(key){const c=circuits.get(key);if(c){c.on=!c.on;apply();}},applyMood,update(dt){gameTime+=dt;if(gameTime-gameFrame>.08){gameFrame=gameTime;drawScreen();}},setLanguage(lang){language=lang;drawScreen();},
     frame(camera,controls,width,height,closeup=false){const portrait=width/height<.85;camera.fov=portrait?(closeup?48:54):(closeup?38:40);camera.aspect=width/height;

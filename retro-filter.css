@@ -2,7 +2,7 @@
    use different strengths. Noise is static: no flickering frame work. */
 :root{
   --crt-scene:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(5,9,51,.065) 2px,rgba(5,9,51,.065) 3px),repeating-linear-gradient(90deg,rgba(194,212,229,.012) 0px,rgba(194,212,229,.012) 1px,transparent 1px,transparent 3px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='1' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='.04'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-  --crt-ui:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(5,9,51,.025) 2px,rgba(5,9,51,.025) 3px);
+  --crt-ui:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(5,9,51,.015) 2px,rgba(5,9,51,.015) 3px);
 }
 body.retro-filter #scene,body.retro-filter header,body.retro-filter #scene-controls,body.retro-filter #tooltip,body.retro-filter #journey,body.retro-filter #panel{filter:url('#retro-color-steps')}
 @media(min-width:651px){#scene-controls{position:absolute;inset:0;pointer-events:none}#scene-controls .shortcuts{pointer-events:auto}}
@@ -14,7 +14,7 @@ body.retro-filter #panel img{image-rendering:pixelated}
 body.retro-filter #panel.media-original{filter:none}
 body.retro-filter #panel.media-original::after{display:none}
 body.retro-filter #panel.media-original img,body.retro-filter #panel.media-original video{image-rendering:auto;filter:none}
-body.retro-filter .brand,body.retro-filter #panel h1{text-shadow:1px 0 rgba(160,145,184,.25),-1px 0 rgba(80,89,146,.25),2px 2px var(--navy)}
+body.retro-filter .brand,body.retro-filter #panel h1{text-shadow:1px 0 rgba(160,145,184,.16),-1px 0 rgba(80,89,146,.16),1px 1px var(--navy)}
 body.cinematic #console-help button[data-retro-toggle]{font-size:10px;min-height:28px;padding:3px 7px;margin-left:auto;border:1px solid var(--indigo);background:transparent;letter-spacing:0}
 body.cinematic #console-help button[data-retro-toggle][aria-pressed=true]{border-bottom-color:var(--yellow)}
 @media(max-width:759px){body.retro-filter #scene::before{box-shadow:inset 0 0 55px rgba(5,9,51,.10)}body.cinematic #console-help button[data-retro-toggle]{margin-left:0}}

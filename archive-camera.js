@@ -11,6 +11,7 @@ const shots = {
   films: [[-.75, 1.7, 2.15], [-2.06, 1.0, -.23]],
   music: [[3.35, 3.25, 1.6], [2.42, 1.8, -.33]],
   about: [[-1.12, 3.1, 1.9], [-1.29, 1.65, .47]],
+  contact: [[-1.12, 3.1, 1.9], [-1.29, 1.65, .47]],
   all: [[2.62, 2.85, 3.25], [.35, 2.38, -.3]],
 };
 
@@ -55,13 +56,13 @@ export function createArchiveCamera(camera, controls, reduced) {
       const switching=Boolean(origin);
       if (!origin) origin = snapshot();
       key = name; phase = 'approaching';
-      return move(destination(name), switching?.5:.8, 'open');
+      return move(destination(name), switching?.32:.62, 'open');
     },
     async restore() {
       key = null;
       if (!origin) { stop(); phase = 'idle'; return; }
       phase = 'returning';
-      const restored = await move(origin, .6, 'idle');
+      const restored = await move(origin, .42, 'idle');
       if (restored) origin = null;
     },
     cancel() { stop(); origin = null; key = null; phase = 'idle'; },

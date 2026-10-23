@@ -1,26 +1,25 @@
 import * as THREE from 'three';
 import { OrbitControls } from './vendor/OrbitControls.js';
-import { GLTFExporter } from './vendor/GLTFExporter.js';
 import { decorate } from './desk-decor.js';
 import { stylize } from './lowpoly-style.js';
 import { createHoverOutline } from './hover-outline.js?v=art-pass-1';
-import { buildNightStudio } from './night-studio.js?v=pixel-game-20261021';
+import { buildNightStudio } from './night-studio.js?v=review-pass-20261023';
 import { addBlackCat } from './black-cat.js?v=art-pass-1';
-import { createDesktopUI } from './desktop-ui.js?v=art-pass-1';
+import { createDesktopUI } from './desktop-ui.js?v=review-pass-20261023';
 import { createRetroFilter } from './retro-filter.js?v=art-pass-1';
-import { createArchiveCamera } from './archive-camera.js?v=art-pass-1';
+import { createArchiveCamera } from './archive-camera.js?v=review-pass-20261023';
 import { createRoomAmbience } from './room-sound.js?v=art-pass-1';
 import { createWindowRain } from './window-rain.js?v=rain-room';
 
 const $=s=>document.querySelector(s), scene=new THREE.Scene();
 scene.background=new THREE.Color('#c7c3b9');
-const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;$('#scene').appendChild(renderer.domElement);
 const camera=new THREE.PerspectiveCamera(37,innerWidth/innerHeight,.1,80);
 const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,1.8,0);controls.enableDamping=true;controls.dampingFactor=.07;controls.minDistance=3;controls.maxDistance=30;controls.maxPolarAngle=Math.PI*.49;controls.minPolarAngle=.3;controls.enablePan=false;controls.screenSpacePanning=false;controls.enabled=false;controls.enableRotate=false;controls.enableZoom=false;controls.enableDamping=false;controls.minDistance=.5;
 const model=new THREE.Group();model.name='Ataro_Original_Low_Poly_Studio';scene.add(model);
 const hemi=new THREE.HemisphereLight('#fff9e9','#858577',2);scene.add(hemi);
-const sun=new THREE.DirectionalLight('#fff3d6',3.4);sun.position.set(-4,7,5);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-6,right:6,top:6,bottom:-6,near:.1,far:25});sun.shadow.normalBias=.025;sun.shadow.bias=-.0003;sun.shadow.radius=3;scene.add(sun);
+const sun=new THREE.DirectionalLight('#fff3d6',3.4);sun.position.set(-4,7,5);sun.castShadow=true;sun.shadow.mapSize.set(innerWidth<760?1024:2048,innerWidth<760?1024:2048);Object.assign(sun.shadow.camera,{left:-6,right:6,top:6,bottom:-6,near:.1,far:25});sun.shadow.normalBias=.025;sun.shadow.bias=-.0003;sun.shadow.radius=3;scene.add(sun);
 const fill=new THREE.DirectionalLight('#d6e7ef',.65);fill.position.set(5,4,2);scene.add(fill);
 const mats={};function mat(color,roughness=.85,metalness=0){let key=color+roughness+metalness;return mats[key]??=new THREE.MeshStandardMaterial({color,roughness,metalness,flatShading:true});}
 const ivory=mat('#d0cfc3'),wood=mat('#a48351'),dark=mat('#222823'),metal=mat('#525952',.45,.65),paper=mat('#e5dfc8'),wallmat=mat('#bab8b0');
@@ -105,7 +104,7 @@ function presentPanel(){
   $('#journey').textContent='';
   updateConsoleHelp();
   if(!panel.open)panel.showModal();
-  $('#panel-content .work')?.focus({preventScroll:true});
+  $('#panel-content .work, #panel-content .category-card, #panel-content .contact-email')?.focus({preventScroll:true});
   $('#panel-content').getAnimations().forEach(a=>a.cancel());
   if(!reduced)$('#panel-content').animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:220,easing:'cubic-bezier(.2,.75,.2,1)'});
 }
@@ -115,12 +114,14 @@ async function closePanel(){
   if(panel.open&&!reduced)await panel.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(12px)'}],{duration:160,easing:'ease-in',fill:'forwards'}).finished.catch(()=>{});
   panel.close();retroFilter.setDetailMode(false);panel.getAnimations().forEach(a=>a.cancel());panel.classList.remove('leaving');
   activePanel=null;activeWork=null;document.body.classList.remove('archive-open','archive-travel');$('#journey').textContent='';
+  history.replaceState(null,'',location.pathname+location.search);
   await archiveCamera.restore();closing=false;
 }
 $('#panel').addEventListener('cancel',e=>{e.preventDefault();closePanel();});
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#panel').open&&archiveCamera.phase==='approaching'){e.preventDefault();closePanel();}});
 let lang=localStorage.getItem('ataro-lang')==='en'?'en':'zh',night=true,pixel=true,hoverKey='',pointerDown=null,closeup=false;
-const titles={bgm:['环境声 · 点击开关','Ambience · toggle'],cat:['小黑猫','Black cat'],'task-light':['桌灯 · 点击开关','Desk lamp · toggle'],'wall-light':['壁灯 · 点击开关','Wall lamp · toggle'],'globe-light':['氛围灯 · 点击开关','Accent lamp · toggle'],drawing:['绘画设计','Illustration'],ai:['AI 创意','AI Creative'],graphic:['平面设计','Graphic Design'],photo:['摄影后期','Photography'],books:['书籍','Books'],films:['电影收藏','Film Collection'],games:['电子游戏','Video Games'],music:['音乐收藏','Music Collection'],about:['关于我','About Me'],all:['全部作品','Selected Work']};
+const titles={bgm:['环境声 · 点击开关','Ambience · toggle'],cat:['小黑猫','Black cat'],'task-light':['桌灯 · 点击开关','Desk lamp · toggle'],'wall-light':['壁灯 · 点击开关','Wall lamp · toggle'],'globe-light':['氛围灯 · 点击开关','Accent lamp · toggle'],drawing:['绘画设计','Illustration'],ai:['AI 创意','AI Creative'],graphic:['平面设计','Graphic Design'],photo:['摄影后期','Photography'],books:['书籍','Books'],films:['电影收藏','Film Collection'],games:['电子游戏','Video Games'],music:['音乐收藏','Music Collection'],about:['关于我','About Me'],contact:['联系我','Contact'],all:['全部作品','Selected Work']};
+const workCategories=['all','drawing','graphic','photo','ai'];
 const names=[['绘画作品 01','Illustration 01'],['绘画作品 02','Illustration 02'],['AI 作品 01','AI Work 01'],['AI 作品 02','AI Work 02'],['平面设计作品 01','Graphic Design 01'],['平面设计作品 02','Graphic Design 02'],['摄影作品 01','Photography 01'],['摄影作品 02','Photography 02']];
 const workNotes=Array.from({length:8},()=>['图片与项目说明更新中。','Image and project details are being updated.']);
 const loc=a=>a[lang==='zh'?0:1],t=(a,b)=>lang==='zh'?a:b;let activePanel=null,activeWork=null;
@@ -135,13 +136,15 @@ function updateMusicUI(state=bgm.state){
   if($('#audio-status'))$('#audio-status').textContent=state.status==='error'?t('声音暂时无法开启，请点击重试。','Audio could not start. Please try again.'):playing?t('正在聆听雨夜工作室','Listening to the rainy studio'):t('点击开启环境声','Click to start ambience');
   if($('#audio-toggle'))$('#audio-toggle').textContent=state.enabled?t('关闭声音','Mute ambience'):t('开启声音','Play ambience');
 }
-function openMusicPanel(){activePanel='bgm';activeWork=null;hoverOutline.clear();$('#panel-content').innerHTML=`<div class="eyebrow">ATARO / RAINY STUDIO</div><h1 id="panel-title">${t('工作室环境声','Studio ambience')}</h1><p id="audio-status" role="status"></p><div class="audio-controls"><button id="audio-toggle"></button></div><p class="muted">${t('键盘轻响、窗外雨声，以及偶尔从远处传来的汽车鸣笛。点击桌上音响或任务栏按钮可开关声音。','Soft keyboard taps, rain outside, and occasional distant car horns. Toggle with the desk speaker or taskbar button.')}</p>`;$('#audio-toggle').onclick=()=>bgm.toggle();updateMusicUI();presentPanel();}
+function openMusicPanel(){activePanel='bgm';activeWork=null;$('#panel').dataset.section='bgm';hoverOutline.clear();$('#panel-content').innerHTML=`<div class="eyebrow">ATARO / RAINY STUDIO</div><h1 id="panel-title">${t('工作室环境声','Studio ambience')}</h1><p id="audio-status" role="status"></p><div class="audio-controls"><button id="audio-toggle"></button></div><p class="muted">${t('键盘轻响、窗外雨声，以及偶尔从远处传来的汽车鸣笛。点击桌上音响或任务栏按钮可开关声音。','Soft keyboard taps, rain outside, and occasional distant car horns. Toggle with the desk speaker or taskbar button.')}</p>`;$('#audio-toggle').onclick=()=>bgm.toggle();updateMusicUI();presentPanel();}
 $('#bgm').onclick=()=>open('bgm');
-function updateText(){updateMusicUI();document.documentElement.lang=lang==='zh'?'zh-CN':'en';practical.setLanguage(lang);$('#subtitle').textContent=t('沈智键 · 视觉创作者','SHEN ZHIJIAN · VISUAL CREATOR');$('#index').textContent=t('作品索引','Work');$('#about').textContent=loc(titles.about);$('#lang').textContent=t('EN','中文');$('#hint').textContent=t('点击场景物件探索 · Esc 返回','Click objects to explore · ESC Back');$('#reset').textContent=t('工作台','Studio view');$('#camera-mode').textContent=t('小猫近景','Cat close-up');$('#reset').setAttribute('aria-pressed',String(!closeup));$('#camera-mode').setAttribute('aria-pressed',String(closeup));$('#lighting').textContent=night?t('清晨','Dawn'):t('夜晚','Night');$('#pixel').textContent=t('PS2 滤镜','PS2 filter');$('#close').ariaLabel=t('关闭','Close');document.querySelectorAll('[data-key]').forEach(b=>b.textContent=loc(titles[b.dataset.key]));desktopUI.refresh();}
+function updateText(){updateMusicUI();document.documentElement.lang=lang==='zh'?'zh-CN':'en';practical.setLanguage(lang);$('#subtitle').textContent=t('沈智键 · 视觉设计与影像创作','SHEN ZHIJIAN · VISUAL DESIGN & IMAGE MAKING');$('#brand-fields').textContent=t('绘画 / 平面设计 / 摄影 / AI 创意','Illustration / Graphic design / Photography / AI');$('#index').textContent=t('作品','Work');$('#about').textContent=t('关于','About');$('#contact').textContent=t('联系','Contact');$('#lang').textContent=t('EN','中文');$('#hint').textContent=t('点击场景物件探索 · Esc 返回','Click objects to explore · ESC Back');$('#reset').textContent=t('工作台','Studio view');$('#camera-mode').textContent=t('小猫近景','Cat close-up');$('#reset').setAttribute('aria-pressed',String(!closeup));$('#camera-mode').setAttribute('aria-pressed',String(closeup));$('#lighting').textContent=night?t('清晨','Dawn'):t('夜晚','Night');$('#pixel').textContent=t('PS2 滤镜','PS2 filter');$('#close').ariaLabel=t('关闭','Close');document.querySelectorAll('[data-key]').forEach(b=>b.textContent=loc(titles[b.dataset.key]));desktopUI.refresh();}
 function reset(){++panelRequest;archiveCamera.cancel();document.body.classList.remove('archive-travel');$('#journey').textContent='';closeup=false;practical.frame(camera,controls,innerWidth,innerHeight,closeup);updateText();}
 $('#camera-mode').onclick=()=>{++panelRequest;archiveCamera.cancel();document.body.classList.remove('archive-travel');$('#journey').textContent='';closeup=true;practical.frame(camera,controls,innerWidth,innerHeight,closeup);updateText();};
 const propActions=new Map();
 function reactProp(key){if(reduced)return;const object={drawing,photo:cam,ai:laptop,graphic:graphics}[key];if(object)propActions.set(object,{base:object.quaternion.clone(),elapsed:0});}
+function categoryTabs(key){return `<div class="category-tabs" role="group" aria-label="${t('作品分类','Work categories')}">${workCategories.map(category=>`<button type="button" data-category="${category}" aria-pressed="${String(key===category)}">${loc(titles[category])}</button>`).join('')}</div>`;}
+function categoryCards(){return `<div class="category-grid">${workCategories.slice(1).map((category,index)=>`<button class="category-card" data-category="${category}" style="--order:${index}"><span class="category-number" aria-hidden="true">0${index+1}</span><span class="category-copy"><strong>${loc(titles[category])}</strong><small>${t('作品更新中 · 进入分类','Works being updated · Open folder')} →</small></span></button>`).join('')}</div>`;}
 async function open(key,travel=true){hoverOutline.clear();if(key==='bgm'){if($('#panel').open&&activePanel==='bgm'){openMusicPanel();}else if(bgm.state.available&&bgm.state.status!=='error'){bgm.toggle();}else{openMusicPanel();}return;}if(key==='cat'){void bgm.meow(.7);kitten.react(reduced,camera);return;}if(practical.has(key)){practical.toggle(key);return;}
 if(travel&&(!$('#panel').open||activePanel!==key)){
   reactProp(key);
@@ -150,13 +153,15 @@ if(travel&&(!$('#panel').open||activePanel!==key)){
   $('#journey').textContent=t('走近 · ','Approaching · ')+loc(titles[key]);
   if(!await archiveCamera.focus(key)||request!==panelRequest)return;
 }
-activePanel=key;activeWork=null;let indexes={drawing:[0,1],ai:[2,3],graphic:[4,5],photo:[6,7],all:[0,1,2,3,4,5,6,7]}[key];let html=`<div class="eyebrow">MY DOCUMENTS / ATARO</div><h1 id="panel-title">${loc(titles[key])}</h1><p class="archive-intro">${indexes?t('选择作品以查看','Select a work to view'):t('个人收藏档案','Personal collection archive')}</p>`;
-if(indexes)html+=`<div class="grid">${indexes.map(i=>`<button class="work" data-work="${i}" style="--order:${indexes.indexOf(i)}"><div class="work-image"><img src="${workImages[i]}" alt="${loc(names[i])}"></div><span><small>${String(i+1).padStart(2,'0')} /</small> ${loc(names[i])}<b aria-hidden="true">▸</b></span></button>`).join('')}</div>`;
+activePanel=key;activeWork=null;$('#panel').dataset.section=key;let indexes={drawing:[0,1],ai:[2,3],graphic:[4,5],photo:[6,7]}[key];let html=`<div class="eyebrow">MY DOCUMENTS / ATARO</div><h1 id="panel-title">${loc(titles[key])}</h1><p class="archive-intro">${key==='all'?t('从四个创作方向进入作品档案；图片与说明正在更新。','Browse four creative fields. Images and project details are being updated.'):indexes?t('图片与项目说明更新中。','Images and project details are being updated.'):key==='contact'?t('欢迎就设计与影像项目与我联系。','Get in touch about design and image-making projects.'):t('个人收藏档案','Personal collection archive')}</p>`;
+if(key==='all')html+=categoryTabs(key)+categoryCards();
+else if(indexes)html+=categoryTabs(key)+`<div class="grid">${indexes.map(i=>`<button class="work" data-work="${i}" style="--order:${indexes.indexOf(i)}"><div class="work-image"><img src="${workImages[i]}" alt="${loc(names[i])}"></div><span><small>${String(i+1).padStart(2,'0')} /</small> ${loc(names[i])}<b aria-hidden="true">▸</b></span></button>`).join('')}</div>`;
+else if(key==='contact')html+=`<div class="contact-card"><div class="contact-label">EMAIL / ${t('项目合作','PROJECT ENQUIRIES')}</div><a class="contact-email" href="mailto:1245319472@qq.com">1245319472@qq.com ↗</a><div class="contact-actions"><button type="button" data-copy-email>${t('复制邮箱','Copy email')}</button><span id="copy-status" role="status" aria-live="polite"></span></div><p>${t('可以向我介绍你的项目、合作方式与预计时间，我会通过邮件回复。','Tell me about your project, collaboration and timing. I will reply by email.')}</p></div>`;
 else if(key==='about')html+=`<div class="about-intro"><p>${t('我是沈智键，创作涉及绘画、摄影后期、平面设计与 AI 创意。我关注画面的情绪，也在意它能否清楚传达信息。','I’m Shen Zhijian. My work spans illustration, photography, graphic design and AI-assisted creation. I care about the mood of an image and how clearly it communicates.')}</p><p>${t('创作之外，喜欢 Bass、唱歌、电影、阅读和电子游戏。','Outside my practice: bass, singing, films, books and games.')}</p></div><div class="about-grid"><section><h2>${t('目前工作','Current work')}</h2><p><strong>${t('品牌运营 · 深圳市玛布瑞克科技有限公司','Brand operations · MBRK Technology')}</strong><small>2026.06 — ${t('至今','present')}</small></p><p>${t('参与包装与品牌形象设计、宣传片剪辑、网站制作及上线、素材拍摄。','Working across packaging, brand identity, promotional editing, website production and photography.')}</p></section><section><h2>${t('此前经历','Previous work')}</h2><p><strong>${t('全媒体运营 · 深圳市同人益有管理顾问有限公司','Multimedia operations · Tongren Yiyou')}</strong><small>2025.12 — 2026.06</small></p><p>${t('参与视频拍摄与剪辑、海报设计、IP 形象设计及网站制作。','Worked on video production, posters, character identity and websites.')}</p></section><section><h2>${t('创作工具','Creative tools')}</h2><p>Photoshop · Lightroom · CSP · Stable Diffusion · Premiere · DaVinci Resolve</p></section><section><h2>${t('联系','Contact')}</h2><a href="mailto:1245319472@qq.com">1245319472@qq.com ↗</a></section></div>`;
 else{const lists={books:[['兴盛与危机','兴盛与危机','金观涛 / Jin Guantao',coverPaths.crisis],['鲁迅集','Collected Works of Lu Xun','鲁迅 / Lu Xun',coverPaths.luxun]],films:[['爱乐之城','La La Land',''],['沉静如海','Le Silence de la mer','2004'],['忠犬八公','Hachi: A Dog’s Tale',t('美国版','US version')]],games:[['使命召唤16','Call of Duty: Modern Warfare','',coverPaths.modern],['英雄连2','Company of Heroes 2','',coverPaths.heroes],['彩虹六号：围攻','Rainbow Six Siege','',coverPaths.siege]],music:[['Love Song','Love Song',t('方大同','Khalil Fong'),coverPaths.loveSong],['1234567','1234567',t('方大同','Khalil Fong'),coverPaths.oneToSeven]]};html+=`<div class="collection-shelf collection-${key}">`+lists[key].map((row,index)=>`<div class="collection-item">${row[3]?`<img class="collection-object collection-cover" src="${row[3]}" alt="${loc(row)}${t('封面',' cover')}" loading="lazy">`:`<span class="collection-object" style="--item-order:${index}" aria-hidden="true"></span>`}<div class="collection-copy"><strong>${loc(row)}</strong><div>${row[2]}</div></div></div>`).join('')+'</div>';}
-$('#panel-content').innerHTML=html;presentPanel();$('#tooltip').style.display='none';}
-$('#panel-content').addEventListener('click',e=>{let b=e.target.closest('[data-work]');if(b){activeWork=+b.dataset.work;showWork(activeWork);}if(e.target.closest('[data-back]')){const previous=activeWork;open(activePanel,false);document.querySelector(`[data-work="${previous}"]`)?.focus({preventScroll:true});}});
-function showWork(i){retroFilter.setDetailMode(true);$('#panel-content').innerHTML=`<button data-back>← ${t('返回','Back')}</button><h1 id="panel-title">${loc(names[i])}</h1><div class="case-layout"><div class="case-media"><img class="full-image" src="${workImages[i]}" alt="${loc(names[i])}"></div><aside class="case-info"><div class="eyebrow">${t('作品档案','PROJECT FILE')} / ${String(i+1).padStart(2,'0')}</div><h2>${loc(titles[i<2?'drawing':i<4?'ai':i<6?'graphic':'photo'])}</h2><p>${loc(workNotes[i])}</p><p class="muted">${t('新作品将陆续在此展示。','New work will be shown here soon.')}</p></aside></div>`;if(!reduced)$('#panel-content').animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:220});$('#panel').scrollTop=0;updateConsoleHelp();$('#panel-content [data-back]').focus({preventScroll:true});}
+$('#panel-content').innerHTML=html;presentPanel();$('#tooltip').style.display='none';history.replaceState(null,'',location.pathname+location.search+'#'+encodeURIComponent(key));}
+$('#panel-content').addEventListener('click',async e=>{const category=e.target.closest('[data-category]');if(category){open(category.dataset.category);return;}const copy=e.target.closest('[data-copy-email]');if(copy){try{await navigator.clipboard.writeText('1245319472@qq.com');$('#copy-status').textContent=t('已复制','Copied');}catch{$('#copy-status').textContent=t('请长按邮箱地址复制','Select the email address to copy');}return;}let b=e.target.closest('[data-work]');if(b){activeWork=+b.dataset.work;showWork(activeWork);}if(e.target.closest('[data-back]')){const previous=activeWork;open(activePanel,false);document.querySelector(`[data-work="${previous}"]`)?.focus({preventScroll:true});}});
+function showWork(i){activeWork=i;retroFilter.setDetailMode(true);$('#panel-content').innerHTML=`<button data-back>← ${t('返回','Back')}</button><h1 id="panel-title">${loc(names[i])}</h1><div class="case-layout"><div class="case-media"><img class="full-image" src="${workImages[i]}" alt="${loc(names[i])}"></div><aside class="case-info"><div class="eyebrow">${t('作品档案','PROJECT FILE')} / ${String(i+1).padStart(2,'0')}</div><h2>${loc(titles[i<2?'drawing':i<4?'ai':i<6?'graphic':'photo'])}</h2><p>${loc(workNotes[i])}</p><p class="muted">${t('新作品将陆续在此展示。','New work will be shown here soon.')}</p></aside></div>`;if(!reduced)$('#panel-content').animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:220});$('#panel').scrollTop=0;updateConsoleHelp();$('#panel-content [data-back]').focus({preventScroll:true});history.replaceState(null,'',location.pathname+location.search+'#'+encodeURIComponent(activePanel)+'/'+String(i+1).padStart(2,'0'));}
 function updateConsoleHelp(){
   const count=document.querySelectorAll('#panel-content .work').length;
   $('#console-help').innerHTML=`<span><kbd>← → ↑ ↓</kbd>${t('选择','SELECT')}</span><span><kbd>ENTER</kbd>${t('确认','CONFIRM')}</span><span><kbd>ESC</kbd>${t('关闭','CLOSE')}</span><span class="archive-count">${count?String(count).padStart(2,'0')+' '+t('个作品','WORKS'):'ATARO / ARCHIVE'}</span>${activeWork!==null?`<span class="original-label">${t('原画预览','ORIGINAL VIEW')}</span>`:`<button data-retro-toggle aria-pressed="${pixel}">${t('滤镜','FILTER')} ${pixel?'ON':'OFF'}</button>`}`;
@@ -165,19 +170,19 @@ function updateConsoleHelp(){
 document.addEventListener('keydown',e=>{
   if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key)||e.altKey||e.ctrlKey||e.metaKey)return;
   const focused=document.activeElement;
-  const container=focused?.closest('.grid,.shortcuts,header nav,.tools')||(focused===document.body&&!$('#panel').open?$('header nav'):null);
+  const container=focused?.closest('.grid,.category-grid,.category-tabs,.shortcuts,header nav,.tools')||(focused===document.body&&!$('#panel').open?$('header nav'):null);
   if(!container)return;
   const buttons=[...container.querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(focused);
   if(!buttons.length)return;
   if(index<0){e.preventDefault();buttons[0].focus();return;}
   e.preventDefault();
-  const columns=container.matches('.grid,.shortcuts')?getComputedStyle(container).gridTemplateColumns.split(' ').length:1;
+  const columns=container.matches('.grid,.category-grid,.shortcuts')?getComputedStyle(container).gridTemplateColumns.split(' ').length:1;
   let step=e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:e.key==='ArrowUp'?-columns:columns;
   const next=e.key==='Home'?0:e.key==='End'?buttons.length-1:(index+step+buttons.length)%buttons.length;
   buttons[next].focus({preventScroll:true});buttons[next].scrollIntoView({block:'nearest',inline:'nearest'});
 });
 $('#close').onclick=closePanel;$('#panel').addEventListener('click',e=>{if(e.target===$('#panel')){const r=$('#panel').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closePanel();}});
-$('#index').onclick=()=>open('all');$('#about').onclick=()=>open('about');document.querySelectorAll('[data-key]').forEach(b=>b.onclick=()=>open(b.dataset.key));$('#lang').onclick=()=>{lang=lang==='zh'?'en':'zh';localStorage.setItem('ataro-lang',lang);updateText();if($('#panel').open){let i=activeWork;open(activePanel,false);if(i!==null){activeWork=i;showWork(i);}}};
+$('#index').onclick=()=>open('all');$('#about').onclick=()=>open('about');$('#contact').onclick=()=>open('contact');document.querySelectorAll('[data-key]').forEach(b=>b.onclick=()=>open(b.dataset.key));$('#lang').onclick=()=>{lang=lang==='zh'?'en':'zh';localStorage.setItem('ataro-lang',lang);updateText();if($('#panel').open){let i=activeWork;open(activePanel,false);if(i!==null){activeWork=i;showWork(i);}}};
 $('#reset').onclick=reset;$('#lighting').onclick=()=>{night=!night;practical.applyMood(night);document.body.classList.toggle('night',night);updateText();};
 function resize(reframe=true){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
   // A real low-resolution frame buffer, enlarged with nearest-neighbor sampling.
@@ -214,7 +219,19 @@ renderer.domElement.addEventListener('pointercancel',()=>{pointerPosition=null;p
 window.addEventListener('blur',()=>{pointerPosition=null;pointerDown=null;clearHover();});
 controls.addEventListener('change',updateHover);
 controls.enableDamping=false;
-document.body.classList.add('night','cinematic');$('#pixel').setAttribute('aria-pressed','true');resize();reset();updateText();let clock=new THREE.Clock();renderer.setAnimationLoop(()=>{const dt=Math.min(clock.getDelta(),.05);archiveCamera.update(dt);controls.update();practical.update(dt);kitten.update(dt,reduced);weather.update(dt,reduced);bgm.update(dt,kitten,reduced);for(const [object,action] of propActions){action.elapsed+=dt;const t=Math.min(1,action.elapsed/.12),angle=Math.sin(t*Math.PI)*THREE.MathUtils.degToRad(2);object.quaternion.copy(action.base).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),angle));if(t===1){object.quaternion.copy(action.base);propActions.delete(object);}}if(!reduced&&activePanel==='music'&&$('#panel').open)disc.rotation.y+=dt*.5;hoverOutline.render();});
+document.body.classList.add('night','cinematic');$('#pixel').setAttribute('aria-pressed','true');resize();reset();updateText();let clock=new THREE.Clock();renderer.setAnimationLoop(()=>{if(document.hidden){clock.getDelta();return;}const dt=Math.min(clock.getDelta(),.05);archiveCamera.update(dt);controls.update();practical.update(dt);kitten.update(dt,reduced);weather.update(dt,reduced);bgm.update(dt,kitten,reduced);for(const [object,action] of propActions){action.elapsed+=dt;const t=Math.min(1,action.elapsed/.12),angle=Math.sin(t*Math.PI)*THREE.MathUtils.degToRad(2);object.quaternion.copy(action.base).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),angle));if(t===1){object.quaternion.copy(action.base);propActions.delete(object);}}if(!reduced&&activePanel==='music'&&$('#panel').open)disc.rotation.y+=dt*.5;hoverOutline.render();});
+async function syncRoute(){
+  const [section,number]=decodeURIComponent(location.hash.slice(1)).split('/');
+  if(!['all','drawing','graphic','photo','ai','about','contact','books','games','films','music'].includes(section)){
+    if($('#panel').open)closePanel();
+    return;
+  }
+  await open(section);
+  const i=Number(number)-1;
+  if(Number.isInteger(i)&&i>=0&&i<8&&$('#panel-content [data-work="'+i+'"]'))showWork(i);
+}
+window.addEventListener('hashchange',syncRoute);
+if(location.hash)syncRoute();
 THREE.DefaultLoadingManager.onLoad=()=>{$('#loading').style.display='none';};setTimeout(()=>{$('#loading').style.display='none';},1500);
 // Expose read-only scene inspection and a genuine reusable binary model export for local QA.
-window.studio={weather,retroFilter,archiveCamera,scene,model,camera,controls,renderer,objects,hit,open,hoverOutline,practical,kitten,bgm,exportGLB:()=>new Promise((resolve,reject)=>new GLTFExporter().parse(model,resolve,reject,{binary:true}))};
+window.studio={weather,retroFilter,archiveCamera,scene,model,camera,controls,renderer,objects,hit,open,hoverOutline,practical,kitten,bgm,exportGLB:async()=>{const {GLTFExporter}=await import('./vendor/GLTFExporter.js');return new Promise((resolve,reject)=>new GLTFExporter().parse(model,resolve,reject,{binary:true}));}};
