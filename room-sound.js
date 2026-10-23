@@ -3,7 +3,7 @@
 export function createRoomSound(context, destination=context.destination) {
   const master=context.createGain();master.gain.value=0;master.connect(destination);
   // Interaction sounds remain clear above the deliberately quiet rain bed.
-  const effects=context.createGain();effects.gain.value=0;effects.connect(destination);
+  const effects=context.createGain();effects.gain.value=.72;effects.connect(destination);
   const noise=context.createBuffer(2,context.sampleRate*8,context.sampleRate);
   for(let ch=0;ch<2;ch++){
     const samples=noise.getChannelData(ch),fade=Math.floor(context.sampleRate*.05);
@@ -56,16 +56,31 @@ export function createRoomSound(context, destination=context.destination) {
     tone.start(at);overtone.start(at);vibrato.start(at);tone.stop(at+duration+.02);overtone.stop(at+duration+.02);vibrato.stop(at+duration+.02);
     tone.onended=()=>{tone.disconnect();overtone.disconnect();vibrato.disconnect();depth.disconnect();bright.disconnect();voice.disconnect();filter.disconnect();pan.disconnect();};
   }
-  return {master,effects,key,horn,meow,duck(at){master.gain.cancelScheduledValues(at);master.gain.setValueAtTime(.28,at);master.gain.linearRampToValueAtTime(.22,at+.04);master.gain.setValueAtTime(.22,at+.42);master.gain.linearRampToValueAtTime(.28,at+.55);},setPlaying(playing){const now=context.currentTime;master.gain.cancelScheduledValues(now);effects.gain.cancelScheduledValues(now);master.gain.setTargetAtTime(playing?.28:0,now,playing?.14:.025);effects.gain.setTargetAtTime(playing?.78:0,now,playing?.035:.015);}};
+  function cue(kind,at=context.currentTime){
+    const presets={switch:[540,260,.045,.055,'triangle'],paper:[760,450,.13,.042,'sine'],shutter:[1700,650,.065,.075,'square'],digital:[620,990,.11,.043,'square'],media:[480,340,.13,.055,'triangle'],window:[290,180,.16,.075,'triangle']};
+    const [from,to,duration,level,wave]=presets[kind]||presets.switch;
+    const tone=context.createOscillator(),envelope=context.createGain();tone.type=wave;
+    tone.frequency.setValueAtTime(from,at);tone.frequency.exponentialRampToValueAtTime(to,at+duration);
+    envelope.gain.setValueAtTime(.0001,at);envelope.gain.linearRampToValueAtTime(level,at+.004);envelope.gain.exponentialRampToValueAtTime(.0001,at+duration);
+    tone.connect(envelope).connect(effects);tone.start(at);tone.stop(at+duration+.01);
+    tone.onended=()=>{tone.disconnect();envelope.disconnect();};
+    if(kind==='paper'||kind==='shutter'||kind==='window'){
+      const burst=context.createBufferSource(),filter=context.createBiquadFilter(),volume=context.createGain();burst.buffer=click;burst.playbackRate.value=kind==='paper'?.55:kind==='window'?.75:1.3;
+      filter.type=kind==='paper'?'lowpass':'bandpass';filter.frequency.value=kind==='paper'?1100:kind==='window'?800:2300;
+      volume.gain.value=kind==='shutter'?.15:.10;burst.connect(filter).connect(volume).connect(effects);burst.start(at);
+      burst.onended=()=>{burst.disconnect();filter.disconnect();volume.disconnect();};
+    }
+  }
+  return {master,effects,key,horn,meow,cue,setRainEnabled(enabled){const now=context.currentTime;rainGain.gain.cancelScheduledValues(now);rainGain.gain.setValueAtTime(rainGain.gain.value,now);rainGain.gain.linearRampToValueAtTime(enabled?.65:0,now+.28);},duck(at){master.gain.cancelScheduledValues(at);master.gain.setValueAtTime(.28,at);master.gain.linearRampToValueAtTime(.22,at+.04);master.gain.setValueAtTime(.22,at+.42);master.gain.linearRampToValueAtTime(.28,at+.55);},setPlaying(playing){const now=context.currentTime;master.gain.cancelScheduledValues(now);master.gain.setTargetAtTime(playing?.28:0,now,playing?.14:.025);}};
 }
 
 export function createRoomAmbience(onState){
-  let context=null,sound=null,status='waiting',desired=true,version=0;
+  let context=null,sound=null,status='waiting',desired=true,version=0,rainEnabled=true;
   let hornWait=14+Math.random()*12,keyWait=0,meowCount=0,lastMeow=-Infinity;const lifted=[false,false];
-  const state=()=>({status,enabled:desired,volume:.4,meows:meowCount,available:true,title:'Rainy workstation',effect:'room-ambience'});
+  const state=()=>({status,enabled:desired,rainEnabled,volume:.4,meows:meowCount,available:true,title:'Rainy workstation',effect:'room-ambience'});
   const publish=()=>onState(state());
   function ensureAudio(){
-    if(!context){context=new (window.AudioContext||window.webkitAudioContext)();sound=createRoomSound(context);}
+    if(!context){context=new (window.AudioContext||window.webkitAudioContext)();sound=createRoomSound(context);sound.setRainEnabled(rainEnabled);}
   }
   async function start(){
     if(!desired||document.hidden)return;
@@ -88,15 +103,23 @@ export function createRoomAmbience(onState){
     return start();
   }
   async function meow(delay=.7){
-    if(!desired)return false;
     const now=performance.now();if(now-lastMeow<1500)return false;lastMeow=now;
     try{
       // Queue while still inside the click gesture. A suspended context begins
       // this note as soon as resume succeeds, instead of losing the brief meow.
       ensureAudio();const at=context.currentTime+Math.max(.08,delay);sound.meow(at);meowCount++;publish();
-      await start();if(status==='playing')sound.duck(at);return status==='playing';
+      await context.resume();if(desired&&status!=='playing')await start();if(status==='playing')sound.duck(at);return context.state==='running';
     }catch{return false;}
   }
+  function effect(key){
+    try{
+      ensureAudio();
+      const kind=key==='blinds'?'window':key==='photo'?'shutter':['drawing','graphic','books','about','contact'].includes(key)?'paper':['ai','games'].includes(key)?'digital':['music','films'].includes(key)?'media':'switch';
+      sound.cue(kind,context.currentTime+.025);
+      void context.resume().then(()=>{if(desired&&status!=='playing')void start();}).catch(()=>{});
+    }catch{/* Sound is optional when the browser has no audio device. */}
+  }
+  function setRainEnabled(enabled){rainEnabled=Boolean(enabled);sound?.setRainEnabled(rainEnabled);publish();}
   function suspend(){version++;sound?.setPlaying(false);status=desired?'waiting':'paused';publish();context?.suspend();}
   const unlock=()=>{if(desired&&status!=='playing')void start();};
   // Bubble after control handlers so an explicit mute is never undone by unlock.
@@ -107,7 +130,7 @@ export function createRoomAmbience(onState){
   window.addEventListener('pageshow',()=>{if(desired)void start();});
   // Defer callbacks until the scene and its controls finish initializing.
   queueMicrotask(()=>void start());
-  return {toggle,meow,get state(){return state();},update(dt,kitten,reduced){
+  return {toggle,meow,effect,setRainEnabled,get state(){return state();},update(dt,kitten,reduced){
     const typing=kitten.reactionPhase==='typing'&&kitten.isTyping!==false;
     kitten.arms.forEach((arm,i)=>{const up=arm.paw.position.y>.730;if(lifted[i]&&!up&&typing&&!reduced&&status==='playing')sound.key(context.currentTime,arm.sign);lifted[i]=up;});
     if(status!=='playing')return;
