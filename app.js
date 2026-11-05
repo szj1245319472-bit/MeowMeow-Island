@@ -98,7 +98,7 @@ const archiveCamera=createArchiveCamera(camera,controls,reduced);
 const retroFilter=createRetroFilter($('#panel-content'));
 // Mouse drag orbits the fixed workstation shot by at most 15 degrees on each axis.
 const orbitLimit=THREE.MathUtils.degToRad(15);
-let orbitBase=null,orbitYaw=0,orbitPitch=0,orbitDrag=null;
+let orbitBase=null,orbitYaw=0,orbitPitch=0,orbitTargetYaw=0,orbitTargetPitch=0,orbitDrag=null;
 function applyOrbit(){
   if(!orbitBase)return;
   const spherical=new THREE.Spherical().setFromVector3(orbitBase.clone().sub(controls.target));
@@ -107,8 +107,16 @@ function applyOrbit(){
   camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(spherical));
   camera.lookAt(controls.target);
 }
-function resetOrbit(){orbitYaw=orbitPitch=0;orbitDrag=null;if(orbitBase){camera.position.copy(orbitBase);camera.lookAt(controls.target);}}
-function captureOrbit(){orbitBase=camera.position.clone();orbitYaw=orbitPitch=0;orbitDrag=null;}
+function updateOrbit(dt){
+  if(!orbitBase||archiveCamera.busy)return;
+  const ease=reduced?1:1-Math.exp(-dt*12);
+  const nextYaw=orbitYaw+(orbitTargetYaw-orbitYaw)*ease;
+  const nextPitch=orbitPitch+(orbitTargetPitch-orbitPitch)*ease;
+  if(Math.abs(nextYaw-orbitYaw)+Math.abs(nextPitch-orbitPitch)<.00001)return;
+  orbitYaw=nextYaw;orbitPitch=nextPitch;applyOrbit();updateHover();
+}
+function resetOrbit(){orbitYaw=orbitPitch=orbitTargetYaw=orbitTargetPitch=0;orbitDrag=null;if(orbitBase){camera.position.copy(orbitBase);camera.lookAt(controls.target);}}
+function captureOrbit(){orbitBase=camera.position.clone();orbitYaw=orbitPitch=orbitTargetYaw=orbitTargetPitch=0;orbitDrag=null;}
 let panelRequest=0,closing=false;
 function presentPanel(){
   retroFilter.setDetailMode(false);
@@ -215,15 +223,15 @@ function clearHover(){clearTimeout(hoverTimer);hoverOutline.clear();hoverKey='';
 let pointerPosition=null,hoverTimer=null;
 const workCounts={drawing:2,ai:2,graphic:2,photo:2,all:8};
 function updateHover(){if(!pointerPosition||pointerDown||archiveCamera.busy||$('#panel').open){clearHover();return;}const {x,y}=pointerPosition;const target=pick(x,y),key=target?.userData.key||'';hoverOutline.setTarget(target);renderer.domElement.style.cursor=target?'pointer':'default';const tip=$('#tooltip');if(key!==hoverKey){clearTimeout(hoverTimer);tip.style.display='none';hoverKey=key;if(key)hoverTimer=setTimeout(()=>{if(hoverKey!==key||!pointerPosition||$('#panel').open)return;const count=workCounts[key];tip.textContent=loc(titles[key])+(count?` · ${count} ${t('件作品','works')}`:'');tip.style.display='block';},180);}if(key){tip.style.left=Math.min(innerWidth-190,x+16)+'px';tip.style.top=Math.min(innerHeight-45,y+16)+'px';}}
-renderer.domElement.addEventListener('pointerdown',e=>{pointerDown={x:e.clientX,y:e.clientY};if(e.pointerType==='mouse'&&!archiveCamera.busy&&!$('#panel').open)orbitDrag={x:e.clientX,y:e.clientY,yaw:orbitYaw,pitch:orbitPitch};clearHover();});
+renderer.domElement.addEventListener('pointerdown',e=>{pointerDown={x:e.clientX,y:e.clientY};if(e.pointerType==='mouse'&&!archiveCamera.busy&&!$('#panel').open)orbitDrag={x:e.clientX,y:e.clientY,yaw:orbitTargetYaw,pitch:orbitTargetPitch};clearHover();});
 renderer.domElement.addEventListener('pointerup',e=>{if(pointerDown&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)<6){let key=hit(e.clientX,e.clientY,e.pointerType==='touch');if(key)open(key);}pointerDown=null;orbitDrag=null;});
-renderer.domElement.addEventListener('pointermove',e=>{pointerPosition=e.pointerType==='touch'?null:{x:e.clientX,y:e.clientY};if(orbitDrag){const scale=orbitLimit/(Math.min(innerWidth,innerHeight)*.65);orbitYaw=THREE.MathUtils.clamp(orbitDrag.yaw-(e.clientX-orbitDrag.x)*scale,-orbitLimit,orbitLimit);orbitPitch=THREE.MathUtils.clamp(orbitDrag.pitch+(e.clientY-orbitDrag.y)*scale,-orbitLimit,orbitLimit);applyOrbit();}updateHover();});
+renderer.domElement.addEventListener('pointermove',e=>{pointerPosition=e.pointerType==='touch'?null:{x:e.clientX,y:e.clientY};if(orbitDrag){const scale=orbitLimit/(Math.min(innerWidth,innerHeight)*.65);orbitTargetYaw=THREE.MathUtils.clamp(orbitDrag.yaw-(e.clientX-orbitDrag.x)*scale,-orbitLimit,orbitLimit);orbitTargetPitch=THREE.MathUtils.clamp(orbitDrag.pitch+(e.clientY-orbitDrag.y)*scale,-orbitLimit,orbitLimit);}updateHover();});
 renderer.domElement.addEventListener('pointerleave',()=>{pointerPosition=null;pointerDown=null;orbitDrag=null;clearHover();});
 renderer.domElement.addEventListener('pointercancel',()=>{pointerPosition=null;pointerDown=null;orbitDrag=null;clearHover();});
 window.addEventListener('blur',()=>{pointerPosition=null;pointerDown=null;orbitDrag=null;clearHover();});
 controls.addEventListener('change',updateHover);
 controls.enableDamping=false;
-document.body.classList.add('night','cinematic');$('#pixel').setAttribute('aria-pressed','true');resize();reset();updateText();let clock=new THREE.Clock();renderer.setAnimationLoop(()=>{if(document.hidden){clock.getDelta();return;}const dt=Math.min(clock.getDelta(),.05);archiveCamera.update(dt);controls.update();practical.update(dt);kitten.update(dt,reduced);weather.update(dt,reduced);roomSound.update(dt,kitten,reduced);for(const [object,action] of propActions){action.elapsed+=dt;const t=Math.min(1,action.elapsed/.12),angle=Math.sin(t*Math.PI)*THREE.MathUtils.degToRad(2);object.quaternion.copy(action.base).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),angle));if(t===1){object.quaternion.copy(action.base);propActions.delete(object);}}if(!reduced&&activePanel==='music'&&$('#panel').open)disc.rotation.y+=dt*.5;hoverOutline.render();});
+document.body.classList.add('night','cinematic');$('#pixel').setAttribute('aria-pressed','true');resize();reset();updateText();let clock=new THREE.Clock();renderer.setAnimationLoop(()=>{if(document.hidden){clock.getDelta();return;}const dt=Math.min(clock.getDelta(),.05);archiveCamera.update(dt);updateOrbit(dt);controls.update();practical.update(dt);kitten.update(dt,reduced);weather.update(dt,reduced);roomSound.update(dt,kitten,reduced);for(const [object,action] of propActions){action.elapsed+=dt;const t=Math.min(1,action.elapsed/.12),angle=Math.sin(t*Math.PI)*THREE.MathUtils.degToRad(2);object.quaternion.copy(action.base).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),angle));if(t===1){object.quaternion.copy(action.base);propActions.delete(object);}}if(!reduced&&activePanel==='music'&&$('#panel').open)disc.rotation.y+=dt*.5;hoverOutline.render();});
 async function syncRoute(){
   const [section,number]=decodeURIComponent(location.hash.slice(1)).split('/');
   if(!['all','drawing','graphic','photo','ai','about','contact','books','games','films','music'].includes(section)){
