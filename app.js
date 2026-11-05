@@ -96,6 +96,19 @@ const hoverOutline=createHoverOutline(renderer,scene,camera,model);
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const archiveCamera=createArchiveCamera(camera,controls,reduced);
 const retroFilter=createRetroFilter($('#panel-content'));
+// Mouse drag orbits the fixed workstation shot by at most 15 degrees on each axis.
+const orbitLimit=THREE.MathUtils.degToRad(15);
+let orbitBase=null,orbitYaw=0,orbitPitch=0,orbitDrag=null;
+function applyOrbit(){
+  if(!orbitBase)return;
+  const spherical=new THREE.Spherical().setFromVector3(orbitBase.clone().sub(controls.target));
+  spherical.theta+=orbitYaw;
+  spherical.phi=THREE.MathUtils.clamp(spherical.phi+orbitPitch,.15,Math.PI-.15);
+  camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(spherical));
+  camera.lookAt(controls.target);
+}
+function resetOrbit(){orbitYaw=orbitPitch=0;orbitDrag=null;if(orbitBase){camera.position.copy(orbitBase);camera.lookAt(controls.target);}}
+function captureOrbit(){orbitBase=camera.position.clone();orbitYaw=orbitPitch=0;orbitDrag=null;}
 let panelRequest=0,closing=false;
 function presentPanel(){
   retroFilter.setDetailMode(false);
@@ -130,8 +143,8 @@ model.getObjectByName('Lowpoly_night_city')?.children.filter(item=>item.isPoints
 const roomSound=createRoomAmbience();
 const desktopUI=createDesktopUI(open,t);
 function updateText(){document.documentElement.lang=lang==='zh'?'zh-CN':'en';practical.setLanguage(lang);$('#subtitle').textContent=t('沈智键 · 视觉设计与影像创作','SHEN ZHIJIAN · VISUAL DESIGN & IMAGE MAKING');$('#brand-fields').textContent=t('绘画 / 平面设计 / 摄影 / AI 创意','Illustration / Graphic design / Photography / AI');$('#index').textContent=t('作品','Work');$('#about').textContent=t('关于','About');$('#contact').textContent=t('联系','Contact');$('#lang').textContent=t('EN','中文');$('#hint').textContent=t('点击场景物件探索 · Esc 返回','Click objects to explore · ESC Back');$('#reset').textContent=t('工作台','Studio view');$('#camera-mode').textContent=t('小猫近景','Cat close-up');$('#reset').setAttribute('aria-pressed',String(!closeup));$('#camera-mode').setAttribute('aria-pressed',String(closeup));$('#lighting').textContent=night?t('清晨','Dawn'):t('夜晚','Night');$('#pixel').textContent=t('PS2 滤镜','PS2 filter');$('#close').ariaLabel=t('关闭','Close');document.querySelectorAll('[data-key]').forEach(b=>b.textContent=loc(titles[b.dataset.key]));desktopUI.refresh();}
-function reset(){++panelRequest;archiveCamera.cancel();document.body.classList.remove('archive-travel');$('#journey').textContent='';closeup=false;practical.frame(camera,controls,innerWidth,innerHeight,closeup);updateText();}
-$('#camera-mode').onclick=()=>{++panelRequest;archiveCamera.cancel();document.body.classList.remove('archive-travel');$('#journey').textContent='';closeup=true;practical.frame(camera,controls,innerWidth,innerHeight,closeup);updateText();};
+function reset(){++panelRequest;archiveCamera.cancel();document.body.classList.remove('archive-travel');$('#journey').textContent='';closeup=false;practical.frame(camera,controls,innerWidth,innerHeight,closeup);captureOrbit();updateText();}
+$('#camera-mode').onclick=()=>{++panelRequest;archiveCamera.cancel();document.body.classList.remove('archive-travel');$('#journey').textContent='';closeup=true;practical.frame(camera,controls,innerWidth,innerHeight,closeup);captureOrbit();updateText();};
 const propActions=new Map();
 function reactProp(key){if(reduced)return;const object={drawing,photo:cam,ai:laptop,graphic:graphics}[key];if(object)propActions.set(object,{base:object.quaternion.clone(),elapsed:0});}
 function categoryTabs(key){return `<div class="category-tabs" role="group" aria-label="${t('作品分类','Work categories')}">${workCategories.map(category=>`<button type="button" data-category="${category}" aria-pressed="${String(key===category)}">${loc(titles[category])}</button>`).join('')}</div>`;}
@@ -140,7 +153,7 @@ async function open(key,travel=true,playSound=true){hoverOutline.clear();if(play
 if(travel&&(!$('#panel').open||activePanel!==key)){
   reactProp(key);
   if($('#panel').open){$('#panel').close();document.body.classList.remove('archive-open');retroFilter.setDetailMode(false);}
-  const request=++panelRequest;document.body.classList.add('archive-travel');
+  resetOrbit();const request=++panelRequest;document.body.classList.add('archive-travel');
   $('#journey').textContent=t('走近 · ','Approaching · ')+loc(titles[key]);
   if(!await archiveCamera.focus(key)||request!==panelRequest)return;
 }
@@ -181,7 +194,7 @@ function resize(reframe=true){camera.aspect=innerWidth/innerHeight;camera.update
   renderer.setPixelRatio(ratio);renderer.setSize(innerWidth,innerHeight);
   renderer.domElement.style.imageRendering=pixel?'pixelated':'auto';
   retroFilter.setEnabled(pixel);
-  if(reframe){practical.frame(camera,controls,innerWidth,innerHeight,closeup);archiveCamera.resize();}
+  if(reframe){practical.frame(camera,controls,innerWidth,innerHeight,closeup);captureOrbit();archiveCamera.resize();}
 }
 function toggleRetro(){pixel=!pixel;$('#pixel').setAttribute('aria-pressed',String(pixel));resize(false);if($('#panel').open)updateConsoleHelp();}
 $('#pixel').onclick=toggleRetro;
@@ -202,12 +215,12 @@ function clearHover(){clearTimeout(hoverTimer);hoverOutline.clear();hoverKey='';
 let pointerPosition=null,hoverTimer=null;
 const workCounts={drawing:2,ai:2,graphic:2,photo:2,all:8};
 function updateHover(){if(!pointerPosition||pointerDown||archiveCamera.busy||$('#panel').open){clearHover();return;}const {x,y}=pointerPosition;const target=pick(x,y),key=target?.userData.key||'';hoverOutline.setTarget(target);renderer.domElement.style.cursor=target?'pointer':'default';const tip=$('#tooltip');if(key!==hoverKey){clearTimeout(hoverTimer);tip.style.display='none';hoverKey=key;if(key)hoverTimer=setTimeout(()=>{if(hoverKey!==key||!pointerPosition||$('#panel').open)return;const count=workCounts[key];tip.textContent=loc(titles[key])+(count?` · ${count} ${t('件作品','works')}`:'');tip.style.display='block';},180);}if(key){tip.style.left=Math.min(innerWidth-190,x+16)+'px';tip.style.top=Math.min(innerHeight-45,y+16)+'px';}}
-renderer.domElement.addEventListener('pointerdown',e=>{pointerDown={x:e.clientX,y:e.clientY};clearHover();});
-renderer.domElement.addEventListener('pointerup',e=>{if(pointerDown&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)<6){let key=hit(e.clientX,e.clientY,e.pointerType==='touch');if(key)open(key);}pointerDown=null;});
-renderer.domElement.addEventListener('pointermove',e=>{pointerPosition=e.pointerType==='touch'?null:{x:e.clientX,y:e.clientY};updateHover();});
-renderer.domElement.addEventListener('pointerleave',()=>{pointerPosition=null;pointerDown=null;clearHover();});
-renderer.domElement.addEventListener('pointercancel',()=>{pointerPosition=null;pointerDown=null;clearHover();});
-window.addEventListener('blur',()=>{pointerPosition=null;pointerDown=null;clearHover();});
+renderer.domElement.addEventListener('pointerdown',e=>{pointerDown={x:e.clientX,y:e.clientY};if(e.pointerType==='mouse'&&!archiveCamera.busy&&!$('#panel').open)orbitDrag={x:e.clientX,y:e.clientY,yaw:orbitYaw,pitch:orbitPitch};clearHover();});
+renderer.domElement.addEventListener('pointerup',e=>{if(pointerDown&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)<6){let key=hit(e.clientX,e.clientY,e.pointerType==='touch');if(key)open(key);}pointerDown=null;orbitDrag=null;});
+renderer.domElement.addEventListener('pointermove',e=>{pointerPosition=e.pointerType==='touch'?null:{x:e.clientX,y:e.clientY};if(orbitDrag){const scale=orbitLimit/(Math.min(innerWidth,innerHeight)*.65);orbitYaw=THREE.MathUtils.clamp(orbitDrag.yaw-(e.clientX-orbitDrag.x)*scale,-orbitLimit,orbitLimit);orbitPitch=THREE.MathUtils.clamp(orbitDrag.pitch+(e.clientY-orbitDrag.y)*scale,-orbitLimit,orbitLimit);applyOrbit();}updateHover();});
+renderer.domElement.addEventListener('pointerleave',()=>{pointerPosition=null;pointerDown=null;orbitDrag=null;clearHover();});
+renderer.domElement.addEventListener('pointercancel',()=>{pointerPosition=null;pointerDown=null;orbitDrag=null;clearHover();});
+window.addEventListener('blur',()=>{pointerPosition=null;pointerDown=null;orbitDrag=null;clearHover();});
 controls.addEventListener('change',updateHover);
 controls.enableDamping=false;
 document.body.classList.add('night','cinematic');$('#pixel').setAttribute('aria-pressed','true');resize();reset();updateText();let clock=new THREE.Clock();renderer.setAnimationLoop(()=>{if(document.hidden){clock.getDelta();return;}const dt=Math.min(clock.getDelta(),.05);archiveCamera.update(dt);controls.update();practical.update(dt);kitten.update(dt,reduced);weather.update(dt,reduced);roomSound.update(dt,kitten,reduced);for(const [object,action] of propActions){action.elapsed+=dt;const t=Math.min(1,action.elapsed/.12),angle=Math.sin(t*Math.PI)*THREE.MathUtils.degToRad(2);object.quaternion.copy(action.base).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),angle));if(t===1){object.quaternion.copy(action.base);propActions.delete(object);}}if(!reduced&&activePanel==='music'&&$('#panel').open)disc.rotation.y+=dt*.5;hoverOutline.render();});
