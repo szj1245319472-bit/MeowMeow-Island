@@ -141,7 +141,11 @@ export function buildNightStudio(ctx) {
   const task=spot(lamp.localToWorld(new THREE.Vector3(.27,.49,.015)),[-1.55,1.62,-.10],2.9,.77);task.shadow.mapSize.set(1024,1024);register('task-light',[lamp],[task],[taskMat]);
   const wall=group('Warm_wall_sconce','wall-light',-.46,3.76,-1.22);box(.10,.18,.05,0,.12,0,metal,wall);rod([0,.12,0],[0,.17,.30],.013,metal,wall);mesh(new THREE.CylinderGeometry(.13,.19,.23,8,1,true),new THREE.MeshStandardMaterial({color:'#505992',roughness:1,side:THREE.DoubleSide,flatShading:true}),[0,.0,.30],wall);const wm=glow();cyl(.17,.17,.012,0,-.12,.3,wm,wall,8);
   const wl=spot(new THREE.Vector3(-.46,3.62,-.92),[-.05,3.04,-1.25],1.75,.76);register('wall-light',[wall],[wl],[wm]);
-  const globe=group('Window_accent_lamp','globe-light',-2.8,1.71,-1.1);cyl(.08,.10,.06,0,.025,0,metal,globe,8);const gm=glow();const orb=mesh(new THREE.SphereGeometry(.11,8,5),gm,[0,.15,0],globe);orb.castShadow=false;const gl=new THREE.PointLight('#fddb43',.50,2.2,2);gl.position.set(-2.8,1.9,-1.04);model.add(gl);register('globe-light',[globe],[gl],[gm]);
+  // The window sill ends at y=1.355: the base rests on it, with a visible neck under the bulb.
+  const globe=group('Window_accent_lamp','globe-light',-2.8,1.36,-1.24);
+  cyl(.08,.10,.06,0,.025,0,metal,globe,8);cyl(.034,.045,.07,0,.09,0,metal,globe,6);
+  const gm=glow();const orb=mesh(new THREE.SphereGeometry(.11,8,5),gm,[0,.17,0],globe);orb.castShadow=false;
+  const gl=new THREE.PointLight('#fddb43',.50,2.2,2);gl.position.set(-2.8,1.54,-1.18);model.add(gl);register('globe-light',[globe],[gl],[gm]);
   const monitorLight=new THREE.PointLight('#c2d4e5',1.72,2.2,2);monitorLight.position.set(.02,2.34,.12);model.add(monitorLight);
   const catRim=new THREE.DirectionalLight('#a091b8',1.38);catRim.position.set(-1.5,3.4,2.3);catRim.target.position.set(-.22,2.08,1.41);model.add(catRim,catRim.target);
   const catFill=new THREE.PointLight('#c2d4e5',.23,1.5,2);catFill.position.set(-.45,2.38,1.8);model.add(catFill);

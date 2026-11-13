@@ -3,7 +3,7 @@ import { OrbitControls } from './vendor/OrbitControls.js';
 import { decorate } from './desk-decor.js';
 import { stylize } from './lowpoly-style.js';
 import { createHoverOutline } from './hover-outline.js?v=art-pass-1';
-import { buildNightStudio } from './night-studio.js?v=quiet-blinds-20261023';
+import { buildNightStudio } from './night-studio.js?v=seated-accent-20261113';
 import { addBlackCat } from './black-cat.js?v=art-pass-1';
 import { createDesktopUI } from './desktop-ui.js?v=review-pass-20261023';
 import { createRetroFilter } from './retro-filter.js?v=art-pass-1';
