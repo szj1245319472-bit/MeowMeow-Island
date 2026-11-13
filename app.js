@@ -10,6 +10,7 @@ import { createRetroFilter } from './retro-filter.js?v=art-pass-1';
 import { createArchiveCamera } from './archive-camera.js?v=review-pass-20261023';
 import { createRoomAmbience } from './room-sound.js?v=outside-half-20261023';
 import { createWindowRain } from './window-rain.js?v=rain-room';
+import { applyRetroGeometry } from './retro-geometry.js?v=lowpoly-20261113';
 
 const $=s=>document.querySelector(s), scene=new THREE.Scene();
 scene.background=new THREE.Color('#c7c3b9');
@@ -92,6 +93,7 @@ const decor=decorate({model,scene,box,cyl,rod,mesh,mat,plane,group,frame,texText
 const retro=stylize({model,scene,chair,laptop,wood,ivory,wallmat,renderer,hemi,sun,fill,deskLight});
 const kitten=addBlackCat(chair);objects.cat=kitten.cat;
 const practical=buildNightStudio({model,scene,box,cyl,rod,mesh,mat,plane,group,texText,textures,desk,laptop,chair,kitten,cam,drawing,turn,headphones,lamp,shelf,graphics,games,videos,contact,hemi,sun,fill,deskLight,renderer});
+applyRetroGeometry(model);
 const hoverOutline=createHoverOutline(renderer,scene,camera,model);
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const archiveCamera=createArchiveCamera(camera,controls,reduced);
