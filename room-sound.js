@@ -23,17 +23,29 @@ export function createRoomSound(context, destination=context.destination) {
   rain.connect(high).connect(low).connect(rainGain).connect(outsideBus);rain.start();
   const click=context.createBuffer(1,context.sampleRate*.08,context.sampleRate);
   const data=click.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/(context.sampleRate*.009));
+  // Several short, slightly different keycap impacts. The softened body and
+  // delayed release sound mechanical without the previous pitched oscillator.
+  const keySamples=Array.from({length:10},(_,variant)=>{
+    const sample=context.createBuffer(1,Math.ceil(context.sampleRate*.075),context.sampleRate);
+    const out=sample.getChannelData(0),releaseAt=.029+variant*.0023;
+    let low=0;
+    for(let i=0;i<out.length;i++){
+      const t=i/context.sampleRate,white=Math.random()*2-1;
+      low+=(white-low)*(.09+variant%3*.025);
+      const impact=white*.52*Math.exp(-t/(.0026+variant%4*.00035));
+      const body=low*.56*Math.exp(-t/(.019+variant%3*.003));
+      const release=t>releaseAt?white*.13*Math.exp(-(t-releaseAt)/.0045):0;
+      out[i]=impact+body+release;
+    }
+    return sample;
+  });
   function key(at=context.currentTime,side=0){
-    const source=context.createBufferSource();source.buffer=click;source.playbackRate.value=.8+Math.random()*.4;
-    const filter=context.createBiquadFilter();filter.type='bandpass';filter.frequency.value=1700+Math.random()*800;filter.Q.value=.7;
-    const gain=context.createGain();gain.gain.value=.20+Math.random()*.07;
-    const pan=context.createStereoPanner();pan.pan.value=side*.18;
-    source.connect(filter).connect(gain).connect(pan).connect(keyboardBus);
-    const thock=context.createOscillator();thock.type='triangle';thock.frequency.setValueAtTime(220+Math.random()*65,at);thock.frequency.exponentialRampToValueAtTime(110,at+.035);
-    const body=context.createGain();body.gain.setValueAtTime(0,at);body.gain.linearRampToValueAtTime(.075,at+.002);body.gain.exponentialRampToValueAtTime(.0001,at+.055);
-    thock.connect(body).connect(pan);source.start(at);thock.start(at);thock.stop(at+.06);
-    source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};
-    thock.onended=()=>{thock.disconnect();body.disconnect();setTimeout(()=>pan.disconnect(),100);};
+    const source=context.createBufferSource();source.buffer=keySamples[Math.floor(Math.random()*keySamples.length)];
+    source.playbackRate.value=.94+Math.random()*.12;
+    const gain=context.createGain();gain.gain.value=.20+Math.random()*.08;
+    const pan=context.createStereoPanner();pan.pan.value=side*.12+(Math.random()-.5)*.07;
+    source.connect(gain).connect(pan).connect(keyboardBus);source.start(at);
+    source.onended=()=>{source.disconnect();gain.disconnect();pan.disconnect();};
   }
   function horn(at=context.currentTime){
     // A quiet two-tone car horn, softened by distance and the closed window.

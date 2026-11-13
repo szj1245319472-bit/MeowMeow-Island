@@ -8,7 +8,7 @@ import { addBlackCat } from './black-cat.js?v=art-pass-1';
 import { createDesktopUI } from './desktop-ui.js?v=review-pass-20261023';
 import { createRetroFilter } from './retro-filter.js?v=art-pass-1';
 import { createArchiveCamera } from './archive-camera.js?v=review-pass-20261023';
-import { createRoomAmbience } from './room-sound.js?v=outside-half-20261023';
+import { createRoomAmbience } from './room-sound.js?v=keycaps-20261113';
 import { createWindowRain } from './window-rain.js?v=rain-room';
 import { applyRetroGeometry } from './retro-geometry.js?v=lowpoly-20261113';
 
